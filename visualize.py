@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from data_collection import is_nan_string
 import seaborn as sns
-from sklearn.cluster import DBSCAN 
+from sklearn.cluster import DBSCAN, KMeans
+from umap import UMAP
 
 def separate_by_sol_andplot(data, indices):
     transposed_rows = []  # Collect transposed rows in a list
@@ -25,36 +26,11 @@ def separate_by_sol_andplot(data, indices):
 
     return output.T
 
-def plot_and_cluster(dataframe, nneighbors):
-    """
-    :param dataframe: features
-    :param nneighbors: UMAP parameter input
-    :return: plots UMAP values and clusters based on features, also returns clustering labels
-    """
-    if 'SMILES' in dataframe.columns:
-        dataframe = dataframe.drop(columns='SMILES')
-    if 'Name' in dataframe.columns:
-        dataframe = dataframe.drop(columns='Name')
-
-    dfs = pd.DataFrame(UMAP(n_components=10, n_neighbors=nneighbors, min_dist=0.1).fit_transform(dataframe),
-                                index=dataframe.index,
-                                columns=["UMAP1", "UMAP2","UMAP3","UMAP4","UMAP5","UMAP6",
-                                         "UMAP7","UMAP8","UMAP9","UMAP10"])
-
-    clustering = DBSCAN(eps=.5).fit(dfs)
-
-    # add noise to ligand_files
-    #umap1 = np.array(dataframe['UMAP1'])
-    #umap2 = np.array(dataframe['UMAP2'])
-    #for i in range(len(umap1)):
-        #randy = random.uniform(-1,1)
-        #umap1[i] = umap1[i] + randy
-    #for i in range(len(umap2)):
-        #randy = random.uniform(-1,1)
-        #umap2[i] = umap2[i] + randy
+def plot_and_cluster_DBSCAN(dataframe):
+    clustering = DBSCAN(eps=1.5).fit(dataframe)
 
     # uncover to make scatterplot
-    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['UMAP1'], y=dataframe['UMAP2'], alpha=0.3, palette='gist_ncar',
+    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3, palette='gist_ncar',
                     hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
                     hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
     sns.set(font_scale=2)
@@ -67,15 +43,50 @@ def plot_and_cluster(dataframe, nneighbors):
     plt.show()
     return clustering.labels_
 
+def plot_and_cluster_kmeans(dataframe):
+    kmeans = KMeans(n_clusters=3)
+    clustering = kmeans.fit(dataframe)
+
+    # uncover to make scatterplot
+    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3,
+                                   hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
+                                   hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
+    sns.set(font_scale=2)
+    plt.tick_params(axis='both', which='major', labelsize=14)
+    plt.xlabel('UMAP1', fontsize=16)
+    plt.ylabel('UMAP2', fontsize=16)
+    plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
+    scatter_fig = scatter_plot.get_figure()
+    scatter_fig.savefig('graph2.png', dpi=1200)
+    plt.show()
+    return clustering.labels_
+
 if __name__ == '__main__':
-    pcadata = pd.read_csv('data/pca_data/allsol_610_BR_NM_3com.csv')
-    soldata = pd.read_csv('data/separate_by_sol_610.csv')
+    data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
+    data2 = pd.read_csv('data/BSAdata_580_BR_NM.csv')
+    soldata = pd.read_csv('data/separate_by_sol_580.csv')
 
-    bsadf = separate_by_sol_andplot(pcadata, soldata['BSA'])
-    pegdf = separate_by_sol_andplot(pcadata, soldata['PEG'])
-    phosdf = separate_by_sol_andplot(pcadata, soldata['phos'])
+    plt.plot(data2.iloc[0])
+    plt.plot(data2.iloc[5])
+    plt.plot(data2.iloc[7])
+    plt.show()
+    exit()
 
-    plt.scatter(bsadf['0'], bsadf['1'])
+    # uncover to plot different solvents
+    bsadf = separate_by_sol_andplot(data, soldata['BSA'])
+    pegdf = separate_by_sol_andplot(data, soldata['PEG'])
+    phosdf = separate_by_sol_andplot(data, soldata['phos'])
+    plt.scatter(bsadf['0'], bsadf['1'], c='g')
     plt.scatter(pegdf['0'], pegdf['1'])
     plt.scatter(phosdf['0'], phosdf['1'])
     plt.show()
+
+    plot_and_cluster_kmeans(data)
+
+    # try:
+    # taking a smaller snapshot of spectrum around GSH/GSSG peaks- try with PCA and maybe even models
+    # 1300 dimension PCA
+    # subtract and do two dimensions
+    #
+
+
