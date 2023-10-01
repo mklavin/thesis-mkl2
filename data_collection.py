@@ -140,18 +140,32 @@ def sort_usingsol_index(df, key):
 
     return None
 
+def cut_spectra(df, region=str):
+    if region == '580':
+        start = 26
+        end = 213
+    if region == '610':
+        start = 669
+        end = 834
+
+    return df.iloc[:, start:end]
+
 if __name__ == '__main__':
     df = pd.read_csv('data/data_610_names.csv')
-    contains_580 = pd.read_csv('data/data_610_BR_NM.csv')
-
-    result = pd.DataFrame(columns=contains_580.columns)
-    separate_bysol(df).to_csv('data/separate_by_sol_610.csv')
+    cut_580 = pd.read_csv('data/data_580_BR_NM.csv')
 
 
-    # continue trying to make dataframes separated by sample
-    # why does it leave the last value out?
-    # why doesn't BSA work?
-    # then perform pca on different solutions- prove to casey which component is which
+    # result = pd.DataFrame(columns=contains_580.columns)
+    # separate_bysol(df).to_csv('data/separate_by_sol_610.csv')
+
+    output = cut_spectra(cut_580, '580')
+    output.to_csv('data/cut_data_580_BR_NM.csv', index=False)
+
+    # for i in range(len(output)):
+    #     plt.plot(output.iloc[i])
+    #     plt.show()
+
+
 
 
 

@@ -61,16 +61,9 @@ def evaluate_withmodels(xset, yset, models, iter=10):
     return output
 
 if __name__ == '__main__':
-    pca = pd.read_csv('data/pca_data/test.csv')
-    yvals = pd.read_csv('data/data_610_concentrations.csv')
-    yvals = pca['0']
-    pca = pca.drop(columns=['0'])
-    pca = pca.T
-    yvals = yvals.T
-    print(pca)
-    print(yvals)
+    pca = pd.read_csv('data/pca_data/allsol_580_BR_NM_20com.csv')
+    yvals = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    x_train, x_test, y_train, y_test = create_trainingandtest(pca, yvals)
 
     # models:
     RF = RandomForestRegressor()
@@ -96,4 +89,4 @@ if __name__ == '__main__':
 
     print('30 fold cv score:', np.average(list))
     avg = np.average(yvals)
-    #print(y_pred, y_test)
+    print(y_pred, y_test)

@@ -6,7 +6,6 @@ from sklearn.decomposition import PCA, FastICA
 import numpy as np
 from scipy import sparse, stats
 from scipy.sparse.linalg import spsolve
-from BaselineRemoval import BaselineRemoval
 import matplotlib.pyplot as plt
 import scipy
 import numpy
@@ -45,8 +44,9 @@ def PCA1(data, n):
     pca = pca.fit(data)
     ratio = pca.explained_variance_ratio_
     pca_components = pca.transform(data)
+    vectors = pca.components_[1]
     pca_Df = pd.DataFrame(data=pca_components, columns=columns_)
-    return pca_Df, ratio
+    return pca_Df, ratio, vectors
 
 
 def remove_baseline(spectra):
@@ -83,16 +83,19 @@ if __name__ == '__main__':
     data = pd.read_csv('data/data_610_BR_NM.csv')
     data3 = pd.read_csv('data/data_580_BR_NM.csv')
 
-    rawdata = pd.read_csv('data/data_580_BR_NM.csv')
-    concentrations = pd.read_csv('data/data_580_concentrations.csv')
+    rawdata = pd.read_csv('data/cut_data_580_BR_NM.csv')
+    concentrations = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    #rawdata = pd.concat((rawdata, concentrations), axis=1)
 
-    x = fast_ICA(data1, 3)
-    print(x)
-    #plt.plot(data1.iloc[1])
-    plt.plot(x.iloc[0])
-    plt.show()
-
-
+    df, ratio, n = PCA1(rawdata, 10)
+    #df.to_csv('data/pca_data/cut_data_allsol_580_BR_NM_10com.csv')
+    # x = []
+    # for i in range(len(rawdata.iloc[0])):
+    #     val = rawdata.iloc[0][i] * n[i]
+    #     x.append(val)
+    # print(x)
+    # plt.plot()
+    # plt.show()
 
 
 

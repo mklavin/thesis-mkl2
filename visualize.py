@@ -63,12 +63,10 @@ def plot_and_cluster_kmeans(dataframe):
 
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
-    data2 = pd.read_csv('data/BSAdata_580_BR_NM.csv')
+    data2 = pd.read_csv('data/data_610_BR_NM.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
 
-    plt.plot(data2.iloc[0])
-    plt.plot(data2.iloc[5])
-    plt.plot(data2.iloc[7])
+    plt.plot(data2.iloc[40])
     plt.show()
     exit()
 
@@ -85,8 +83,10 @@ if __name__ == '__main__':
 
     # try:
     # taking a smaller snapshot of spectrum around GSH/GSSG peaks- try with PCA and maybe even models
+    # 121 -213? - 580
+    # 670 -834? - 610
     # 1300 dimension PCA
     # subtract and do two dimensions
-    #
+    # FIND VECTORS ASSOCIATED WITH THE PRINCIPAL COMPONENTS
 
 
