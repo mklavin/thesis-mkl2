@@ -151,8 +151,8 @@ def cut_spectra(df, region=str):
     return df.iloc[:, start:end]
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_610_names.csv')
-    cut_580 = pd.read_csv('data/separate_by_sol_580.csv')
+    df = pd.read_csv('data/data_610_BR_NM.csv')
+    cut_610 = pd.read_csv('data/separate_by_sol_580.csv')
     #conc = pd.read_csv('data/raw_data/data_580.csv')
 
     # result = pd.DataFrame(columns=contains_580.columns)
@@ -165,8 +165,6 @@ if __name__ == '__main__':
     #     plt.plot(output.iloc[i])
     #     plt.show()
 
-    con580, con610 = gather_data()
-    con610['conc_GSH'].to_csv()
 
 
 

@@ -63,8 +63,8 @@ def evaluate_withmodels(xset, yset, models, iter=10):
     return output
 
 if __name__ == '__main__':
-    pca = pd.read_csv('data/pca_data/allsol_610_BR_NM_20com.csv')
-    yvals = pd.read_csv('data/data_610_concentrations_GSSG.csv')
+    pca = pd.read_csv('data/pca_data/cut_data_610_BR_NM_10com.csv')
+    yvals = pd.read_csv('data/data_610_concentrations_GSH.csv')
     # scaler = MinMaxScaler()
     # yvals = scaler.fit_transform(yvals)
     # yvals = pd.DataFrame(yvals)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT]
 
-    model = RF
+    model = GBRT
     i = 0
     list = []
     while i < 30:

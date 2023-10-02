@@ -119,16 +119,16 @@ if __name__ == '__main__':
     data3 = pd.read_csv('data/data_580_BR_NM.csv')
 
     rawdata = pd.read_csv('data/PEGdata_580_BR_NM.csv')
-    subspec = pd.read_csv('data/cut_data_580_BR_NM.csv')
+    subspec = pd.read_csv('data/cut_data_610_BR_NM.csv')
     names = pd.read_csv('data/data_580_names.csv')
     concentrations = pd.read_csv('data/cut_BSAdata_580_BR_NM_concentrations_GSSG.csv')
 
-    for i in range(len(subspec)):
-        plt.plot(subspec.iloc[i])
-        plt.title(str(names.iloc[i]))
-        plt.show()
+    # for i in range(len(subspec)):
+    #     plt.plot(subspec.iloc[i])
+    #     plt.title(str(names.iloc[i]))
+    #     plt.show()
 
-    subtract_solventspec(rawdata, subspec)
+    #subtract_solventspec(rawdata, subspec)
 
 
 
