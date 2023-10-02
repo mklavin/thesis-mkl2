@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas as pd
 import math
+import joblib
+from sklearn.preprocessing import MinMaxScaler
 
 def create_trainingandtest(x, y):
     indices = np.where(y.isna())[0]
@@ -61,9 +63,11 @@ def evaluate_withmodels(xset, yset, models, iter=10):
     return output
 
 if __name__ == '__main__':
-    pca = pd.read_csv('data/pca_data/allsol_580_BR_NM_20com.csv')
-    yvals = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-
+    pca = pd.read_csv('data/pca_data/allsol_610_BR_NM_20com.csv')
+    yvals = pd.read_csv('data/data_610_concentrations_GSSG.csv')
+    # scaler = MinMaxScaler()
+    # yvals = scaler.fit_transform(yvals)
+    # yvals = pd.DataFrame(yvals)
 
     # models:
     RF = RandomForestRegressor()
@@ -75,7 +79,7 @@ if __name__ == '__main__':
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT]
 
-    model = MLP
+    model = RF
     i = 0
     list = []
     while i < 30:
@@ -83,10 +87,10 @@ if __name__ == '__main__':
         model.fit(x_train, y_train)
         y_pred = model.predict(x_test)
         mae = mean_absolute_error(y_test, y_pred)
-        print(mae)
+        print(mae, y_test)
         list.append(mae)
         i += 1
-
+    #joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
     print('30 fold cv score:', np.average(list))
     avg = np.average(yvals)
     print(y_pred, y_test)

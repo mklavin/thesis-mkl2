@@ -113,8 +113,8 @@ def gather_data():
     data.insert(0, 'names', names, True)  # add name column
 
     # adding feature columns and labels
-    data['conc_GSSG'] = data['names'].str.extract(r'(?:.*GSH.*)?(\d+\s*mM)')[0]  # these lines from chatGPT
-    data['conc_GSSG'] = data['conc_GSSG'].str.replace('mM', '').str.strip()
+    data['conc_GSH'] = data['names'].str.extract(r'(?:.*GSSG.*)?(\d+\s*mM)')[0]  # these lines from chatGPT
+    data['conc_GSH'] = data['conc_GSH'].str.replace('mM', '').str.strip()
 
     contains_580 = data[data['names'].str.contains('580')]
     contains_610 = data[data['names'].str.contains('610')]
@@ -128,16 +128,16 @@ def drop_missingvals(spectra):
     spectra = spectra.drop(columns='563')
     return spectra
 
-def sort_usingsol_index(df, key):
+def sort_usingsol_index(df, df2, key):
+    result = pd.DataFrame()
     for i in df[key]:
         if is_nan_string(i) == True:
-            result.to_csv('data/phosdata_580_BR_NM.csv', index=False)
+            #result.to_csv('data/cut_BSAdata_580_BR_NM_concentrations_GSSG.csv', index=False)
             break
         i = int(i)
-        row = contains_580.iloc[i]
+        row = df2.iloc[i]
         row = pd.DataFrame([row])
         result = pd.concat([result, row], ignore_index=True)
-
     return None
 
 def cut_spectra(df, region=str):
@@ -152,20 +152,21 @@ def cut_spectra(df, region=str):
 
 if __name__ == '__main__':
     df = pd.read_csv('data/data_610_names.csv')
-    cut_580 = pd.read_csv('data/data_580_BR_NM.csv')
-
+    cut_580 = pd.read_csv('data/separate_by_sol_580.csv')
+    #conc = pd.read_csv('data/raw_data/data_580.csv')
 
     # result = pd.DataFrame(columns=contains_580.columns)
     # separate_bysol(df).to_csv('data/separate_by_sol_610.csv')
-
-    output = cut_spectra(cut_580, '580')
-    output.to_csv('data/cut_data_580_BR_NM.csv', index=False)
+    # for i in range(len(cut_580)):
+    #     plt.plot(cut_580.iloc[i])
+    #     plt.show()
 
     # for i in range(len(output)):
     #     plt.plot(output.iloc[i])
     #     plt.show()
 
-
+    con580, con610 = gather_data()
+    con610['conc_GSH'].to_csv()
 
 
 
