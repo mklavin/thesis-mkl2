@@ -155,6 +155,26 @@ def preprocess2(df):
             break
     return pca_Df
 
+def preprocess3(df):
+    # smooth, remove first peak, remove baseline, df = df.iloc[:, 120:200], normalize, PCA var > 99.5%
+
+    df = df.iloc[:, 50:]
+    df = smooth_spectra(df)
+    df = remove_baseline(df)
+    df = df.iloc[:, 120:250]
+    df = normalize(df)
+
+    # for i in range(len(df.iloc[0])):
+    #     plt.plot(df.iloc[i])
+    #     plt.show()
+
+    for i in range(40):
+        pca_Df, ratio = PCA1(df, i)
+        if sum(ratio) > 0.995:
+            print(sum(ratio),i)
+            break
+    return pca_Df
+
 
 if __name__ == '__main__':
     df = pd.read_csv('data/data_580.csv')
@@ -165,8 +185,8 @@ if __name__ == '__main__':
     cutdf = df.drop(bad_spec)
     cutconc = conc.drop(bad_spec)
 
-    df = preprocess2(df)
-    df.to_csv('data/prepro_methods/allsol_580_pre2_30com.csv', index=False)
+    df = preprocess3(df)
+    df.to_csv('data/prepro_methods/allsol_580_pre3_9com.csv', index=False)
 
 
 

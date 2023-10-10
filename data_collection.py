@@ -99,7 +99,7 @@ def stitch_spectra(spec_580, spec_610):
     return newdata
 
 def gather_data():
-    folder_path = 'data/raw_data'  # filepath to folder of data
+    folder_path = 'data/daniels_data'  # filepath to folder of data
     n = 1340  # length of spectra
     columns = [i for i in range(1, n)]  # create list of same length
     data = pd.DataFrame(columns=columns)  # empty dataframe with columns for each value
@@ -115,6 +115,8 @@ def gather_data():
     # adding feature columns and labels
     data['conc_GSH'] = data['names'].str.extract(r'(?:.*GSSG.*)?(\d+\s*mM)')[0]  # these lines from chatGPT
     data['conc_GSH'] = data['conc_GSH'].str.replace('mM', '').str.strip()
+    # Reorder the columns to have 'conc_GSH' as the first column
+    data = data[['conc_GSH'] + [col for col in data.columns if col != 'conc_GSH']]
 
     contains_580 = data[data['names'].str.contains('580')]
     contains_610 = data[data['names'].str.contains('610')]
@@ -151,23 +153,28 @@ def cut_spectra(df, region=str):
     return df.iloc[:, start:end]
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_610_BR_NM.csv')
-    cut_610 = pd.read_csv('data/separate_by_sol_580.csv')
-    #conc = pd.read_csv('data/raw_data/data_580.csv')
+    daniels580 = pd.read_csv('data/danielsdata_580.csv')
+    daniels610 = pd.read_csv('data/danielsdata_610.csv')
 
-    cont580, cont610 = gather_data()
-    print(cont610)
-    cont610.drop(columns=['names', 'conc_GSH']).to_csv('data/raw_data/data_610.csv', index=False)
+    data580 = pd.read_csv('data/data_580.csv')
+    data610 = pd.read_csv('data/data_610.csv')
 
-    # result = pd.DataFrame(columns=contains_580.columns)
-    # separate_bysol(df).to_csv('data/separate_by_sol_610.csv')
-    # for i in range(len(cut_580)):
-    #     plt.plot(cut_580.iloc[i])
-    #     plt.show()
+    conc610 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    conc580 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    # for i in range(len(output)):
-    #     plt.plot(output.iloc[i])
-    #     plt.show()
+    names580 = pd.read_csv('data/data_580_names.csv')
+    names610 = pd.read_csv('data/data_610_names.csv')
+
+    conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
+    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
+
+    names610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
+    names580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
+
+    print(conc610)
+
+    # continue adding daniels data to dataframes
+    # then try everything with his data
 
 
 
