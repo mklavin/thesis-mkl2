@@ -37,19 +37,20 @@ def PCA1(data, n):
     pca = pca.fit(data)
     ratio = pca.explained_variance_ratio_
     pca_components = pca.transform(data)
-    vectors = pca.components_[1]
     pca_Df = pd.DataFrame(data=pca_components, columns=columns_)
-    return pca_Df, ratio, vectors
+    return pca_Df, ratio
 
 
 def remove_baseline(spectra):
     # polynomial fitting for baseline removal
 
     baseline_removed = []
+    i = 0
     for index, rowy in spectra.iterrows():
         row = rowy.values.reshape(-1, 1)
         row = row.flatten()
         row_polyfit = pybaselines.polynomial.modpoly(row, poly_order=8)[0]
+        # plt.title(str(i))
         # plt.plot(row)
         # plt.plot(row_polyfit)
         # plt.show()
@@ -58,6 +59,7 @@ def remove_baseline(spectra):
         row = row.reshape(1, -1)
         normalized_df = pd.DataFrame(row, columns=rowy.index)
         baseline_removed.append(normalized_df)
+        i += 1
 
     baselined_spectra = pd.concat(baseline_removed, axis=0, ignore_index=True)
 
@@ -77,6 +79,7 @@ def smooth_spectra(data):
 
     # polynomial fitting for baseline removal
 
+    i=0
     baseline_removed = []
     for index, rowy in data.iterrows():
         row = rowy.values.reshape(-1, 1)
@@ -84,11 +87,13 @@ def smooth_spectra(data):
         row_polyfit = savgol_filter(row, w, polyorder = p, deriv=0)
         # plt.plot(row)
         # plt.plot(row_polyfit)
+        # plt.title(str(i))
         # plt.show()
         row = row_polyfit.flatten()
         row = row.reshape(1, -1)
         normalized_df = pd.DataFrame(row, columns=rowy.index)
         baseline_removed.append(normalized_df)
+        i += 1
 
     baselined_spectra = pd.concat(baseline_removed, axis=0, ignore_index=True)
 
@@ -112,23 +117,57 @@ def subtract_solventspec(data, solventspec):
 
     return baselined_spectra
 
-if __name__ == '__main__':
-    data1 = pd.read_csv('data/pca_data/allsol_580_BR_NM_3com.csv')
-    data2 = pd.read_csv('data/pca_data/PEG_580_BR_NM_3com.csv')
-    data = pd.read_csv('data/data_610_BR_NM.csv')
-    data3 = pd.read_csv('data/data_580_BR_NM.csv')
+def preprocess1(df):
+    # smooth, remove baseline, df = df.iloc[:, 120:250], normalize, PCA var > 99.5%
 
-    rawdata = pd.read_csv('data/PEGdata_580_BR_NM.csv')
-    subspec = pd.read_csv('data/cut_data_610_BR_NM.csv')
-    names = pd.read_csv('data/data_580_names.csv')
-    concentrations = pd.read_csv('data/cut_BSAdata_580_BR_NM_concentrations_GSSG.csv')
+    df = smooth_spectra(df)
+    df = remove_baseline(df)
+    df = df.iloc[:, 120:250]
+    df = normalize(df)
 
-    # for i in range(len(subspec)):
-    #     plt.plot(subspec.iloc[i])
-    #     plt.title(str(names.iloc[i]))
+    # for i in range(len(df.iloc[0])):
+    #     plt.plot(df.iloc[i])
     #     plt.show()
 
-    #subtract_solventspec(rawdata, subspec)
+    for i in range(40):
+        pca_Df, ratio = PCA1(df, i)
+        if sum(ratio) > 0.995:
+            print(sum(ratio),i)
+            break
+    return pca_Df
+
+def preprocess2(df):
+    # smooth, df = df.iloc[:, 120:250], remove baseline, normalize, PCA var > 99.5%
+
+    df = smooth_spectra(df)
+    df = df.iloc[:, 120:250]
+    df = remove_baseline(df)
+    df = normalize(df)
+
+    # for i in range(len(df.iloc[0])):
+    #     plt.plot(df.iloc[i])
+    #     plt.show()
+
+    for i in range(40):
+        pca_Df, ratio = PCA1(df, i)
+        if sum(ratio) > 0.995:
+            print(sum(ratio),i)
+            break
+    return pca_Df
+
+
+if __name__ == '__main__':
+    df = pd.read_csv('data/data_580.csv')
+    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+
+    # how well does model perform when bad spectra are dropped?
+    bad_spec = [4,5,9,8,10,13,15,16,17,19,20,22,34,39,40,51,53,55,59,64,68,73,74,80,87,97]
+    cutdf = df.drop(bad_spec)
+    cutconc = conc.drop(bad_spec)
+
+    df = preprocess2(df)
+    df.to_csv('data/prepro_methods/allsol_580_pre2_30com.csv', index=False)
+
 
 
 

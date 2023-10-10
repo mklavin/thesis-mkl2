@@ -155,6 +155,10 @@ if __name__ == '__main__':
     cut_610 = pd.read_csv('data/separate_by_sol_580.csv')
     #conc = pd.read_csv('data/raw_data/data_580.csv')
 
+    cont580, cont610 = gather_data()
+    print(cont610)
+    cont610.drop(columns=['names', 'conc_GSH']).to_csv('data/raw_data/data_610.csv', index=False)
+
     # result = pd.DataFrame(columns=contains_580.columns)
     # separate_bysol(df).to_csv('data/separate_by_sol_610.csv')
     # for i in range(len(cut_580)):
