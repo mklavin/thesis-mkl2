@@ -18,12 +18,10 @@ def create_trainingandtest(x, y):
     x = np.delete(x, indices, axis=0)
     y = y.dropna()
     y = np.array(y)
-
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.15)
     return x_train, x_test, y_train, y_test
 
-
-def evaluate_withmodels(x,y):
+def evaluate_withmodels(x,y,names, n):
     # models:
     RF = RandomForestRegressor()
     SVM = svm.SVR()
@@ -33,7 +31,8 @@ def evaluate_withmodels(x,y):
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    # models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [MLP]
 
     results = []
     for j in models:
@@ -41,25 +40,67 @@ def evaluate_withmodels(x,y):
         i = 0
         list = []
         while i < 30:
-            x_train, x_test, y_train, y_test = create_trainingandtest(x, y)
+            x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
+            y_pred = np.maximum(y_pred, 0)
             mae = mean_absolute_error(y_test, y_pred)
             list.append(mae)
             i += 1
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'30 fold cv score:', np.average(list)])
-        # print(y_pred, y_test)
+        print(y_pred, y_test)
     print(results)
     return None
 
 
+def new_trainingandtestsplit(x, y, names, split):
+    def categorize_row(row):
+        if 'BSA' in row:
+            return 1
+        elif 'PEG' in row:
+            return 2
+        else:
+            return 3
+    names = names.applymap(categorize_row)
+    ones = (names == 1).sum() * split
+    twos = (names == 2).sum() * split
+    threes = (names == 3).sum() * split
+    splits = [int(ones), int(twos), int(threes)]
+    names['keys'] = [i for i in range(len(names))]
+    names = names.sort_values(by='names')
+    testingx = []
+    testingy = []
+    trainingx = []
+    trainingy = []
+    for i in range(1,3):
+        n = splits[i-1]
+        filtered_names = names[names['names']==int(i)]
+        head_names = filtered_names.head(n)
+        remaining_names = filtered_names.iloc[n:]
+        for i in head_names['keys']:
+            trainingx.append(x.iloc[i])
+            trainingy.append(y.iloc[i])
+
+        for i in remaining_names['keys']:
+            testingx.append(x.iloc[i])
+            testingy.append(y.iloc[i])
+
+    testingx = pd.concat(testingx, ignore_index=True, axis=1).T
+    testingy = pd.concat(testingy, ignore_index=True, axis=1).T
+
+    trainingx = pd.concat(trainingx, ignore_index=True, axis=1).T
+    trainingy = pd.concat(trainingy, ignore_index=True, axis=1).T
+
+    return trainingx, testingx, trainingy, testingy
+
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/pca_data/allsol_610_BR_NM_20com.csv')
+    x1 = pd.read_csv('data/prepro_methods/allsol_580_pre4_27com.csv')
     x2 = pd.read_csv('data/prepro_methods/removerows_580_pre1_6com.csv')
-    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     y2 = pd.read_csv('data/removerows_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/data_580_names.csv')
 
+    evaluate_withmodels(x1, y1, names, .75)
 
-    evaluate_withmodels(x1,y1)
 

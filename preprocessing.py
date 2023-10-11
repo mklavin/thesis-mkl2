@@ -3,8 +3,9 @@ import pandas as pd
 import pybaselines.polynomial
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA, FastICA
-from scipy.signal import savgol_filter
+from scipy.signal import savgol_filter, argrelmin
 import numpy as np
+from scipy.signal import find_peaks
 
 def standardize_byscalar(spectra, scalar):
     # multiply all values by a scalar
@@ -50,11 +51,11 @@ def remove_baseline(spectra):
     for index, rowy in spectra.iterrows():
         row = rowy.values.reshape(-1, 1)
         row = row.flatten()
-        row_polyfit = pybaselines.polynomial.modpoly(row, poly_order=6)[0]
-        plt.title(str(i))
-        plt.plot(row)
-        plt.plot(row_polyfit)
-        plt.show()
+        row_polyfit = pybaselines.polynomial.imodpoly(row, poly_order=8)[0]
+        # plt.title(str(i))
+        # plt.plot(row)
+        # plt.plot(row_polyfit)
+        # plt.show()
         row = row - row_polyfit
         row = row.flatten()
         row = row.reshape(1, -1)
@@ -191,20 +192,21 @@ def preprocess4(df):
     # smooth, remove baseline, df = df.iloc[:, 120:250], normalize, PCA var > 99.5%
 
     df = smooth_spectra(df)
-    df = df.iloc[:, 500:820]
+    df = df.iloc[:, 120:250]
     df = remove_baseline(df)
     #df = df.iloc[:, 62:171]
+    df = normalize(df)
 
-    for i in range(len(df.iloc[0])):
-        plt.plot(df.iloc[i])
-        plt.show()
+    # for i in range(len(df.iloc[0])):
+    #     plt.plot(df.iloc[i])
+    #     plt.show()
 
-    # for i in range(40):
-    #     df, ratio = PCA1(df, i)
-    #     if sum(ratio) > 0.995:
-    #         print(sum(ratio),i)
-    #         break
-    return df
+    for i in range(40):
+        data, ratio = PCA1(df, i)
+        if sum(ratio) > 0.995:
+            print(sum(ratio),i)
+            break
+    return data
 
 def integrate_rows(dataframe):
     integration_list = []
@@ -220,8 +222,9 @@ def integrate_rows(dataframe):
     return integration_df
 
 
+
 if __name__ == '__main__':
-    df = pd.read_csv('data/danielmimi_data_610.csv')
+    df = pd.read_csv('data/data_580.csv')
     conc = pd.read_csv('data/data_610_concentrations_GSH.csv')
 
     # plt.plot(df.iloc[130])
@@ -235,12 +238,9 @@ if __name__ == '__main__':
     df = scale_rows_to_max(df)
 
     df = preprocess4(df)
-    integration = integrate_rows(df)
-    plt.scatter(integration, conc)
-    plt.show()
 
 
-    #df.to_csv('data/prepro_methods/danielmimi_610_pre4_22com.csv', index=False)
+    df.to_csv('data/prepro_methods/allsol_580_pre4_27com.csv', index=False)
 
 
 
