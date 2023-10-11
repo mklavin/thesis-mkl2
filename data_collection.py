@@ -4,6 +4,39 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+def combine_data():
+    daniels580 = pd.read_csv('data/danielsdata_580.csv')
+    daniels610 = pd.read_csv('data/danielsdata_610.csv')
+
+    data580 = pd.read_csv('data/data_580.csv')
+    data610 = pd.read_csv('data/data_610.csv')
+
+    conc610 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    conc580 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+
+    names580 = pd.read_csv('data/data_580_names.csv')
+    names610 = pd.read_csv('data/data_610_names.csv')
+
+    conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
+    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
+
+    names610 = pd.concat([names610['names'], daniels610['names']])
+    names580 = pd.concat([names580['names'], daniels580['names']])
+
+    conc580.to_csv('data/danielmimi_data_580_concentrations_GSSG.csv', index=False)
+    conc610.to_csv('data/danielmimi_data_610_concentrations_GSH.csv', index=False)
+    names580.to_csv('data/danielmimi_data_580_names.csv', index=False)
+    names610.to_csv('data/danielmimi_data_610_names.csv', index=False)
+
+    daniels610 = daniels610.drop(columns=['conc_GSH', 'names', '563'])
+    daniels580 = daniels580.drop(columns=['conc_GSH', 'names', '563'])
+    daniels610 = pd.concat([data610, daniels610])
+    daniels580 = pd.concat([data580, daniels580])
+    daniels580.to_csv('data/danielmimi_data_580.csv', index=False)
+    daniels610.to_csv('data/danielmimi_data_610.csv', index=False)
+
+    return None
+
 def separate_bysol(df):
     # Define the substrings to search for
     substrings = ['BSA', 'PEG', 'phos']
@@ -153,25 +186,8 @@ def cut_spectra(df, region=str):
     return df.iloc[:, start:end]
 
 if __name__ == '__main__':
-    daniels580 = pd.read_csv('data/danielsdata_580.csv')
-    daniels610 = pd.read_csv('data/danielsdata_610.csv')
+    combine_data()
 
-    data580 = pd.read_csv('data/data_580.csv')
-    data610 = pd.read_csv('data/data_610.csv')
-
-    conc610 = pd.read_csv('data/data_610_concentrations_GSH.csv')
-    conc580 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-
-    names580 = pd.read_csv('data/data_580_names.csv')
-    names610 = pd.read_csv('data/data_610_names.csv')
-
-    conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
-    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
-
-    names610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
-    names580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
-
-    print(conc610)
 
     # continue adding daniels data to dataframes
     # then try everything with his data

@@ -55,9 +55,9 @@ def evaluate_withmodels(x,y):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_methods/allsol_580_pre3_9com.csv')
+    x1 = pd.read_csv('data/pca_data/allsol_610_BR_NM_20com.csv')
     x2 = pd.read_csv('data/prepro_methods/removerows_580_pre1_6com.csv')
-    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
     y2 = pd.read_csv('data/removerows_580_concentrations_GSSG.csv')
 
 
