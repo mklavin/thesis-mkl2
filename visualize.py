@@ -5,6 +5,7 @@ from data_collection import is_nan_string
 import seaborn as sns
 from sklearn.cluster import DBSCAN, KMeans
 from umap import UMAP
+import pybaselines.polynomial
 
 def separate_by_sol_andplot(data, indices):
     transposed_rows = []  # Collect transposed rows in a list
@@ -61,13 +62,33 @@ def plot_and_cluster_kmeans(dataframe):
     plt.show()
     return clustering.labels_
 
+def make_thesisplot(x, y):
+    row_polyfit = pybaselines.polynomial.imodpoly(y, poly_order=10)[0]
+
+    plt.rc('font', family='serif')
+    plt.rc('xtick', labelsize='x-small')
+    plt.rc('ytick', labelsize='x-small')
+
+    fig = plt.figure()
+    ax = fig.add_subplot(2, 2, 1)
+
+    ax.plot(x, y, color='b', ls='solid')
+    ax.plot(x, row_polyfit, color='r', ls='solid')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Temperature (K)')
+
+    ax2 = fig.add_subplot(2, 2,2)
+    ax2.plot(x, y-row_polyfit)
+    plt.show()
+    return None
+
+
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
     data2 = pd.read_csv('data/data_610_BR_NM.csv')
-    soldata = pd.read_csv('data/separate_by_sol_580.csv')
+    soldata = pd.read_csv('data/data_580.csv')
 
-    plt.plot(data2.iloc[40])
-    plt.show()
+    make_thesisplot(np.arange(0, len(soldata.iloc[5])), soldata.iloc[5])
     exit()
 
     # uncover to plot different solvents

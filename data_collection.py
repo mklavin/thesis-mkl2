@@ -18,7 +18,7 @@ def combine_data():
     names610 = pd.read_csv('data/data_610_names.csv')
 
     conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
-    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSH']])
+    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSSG']])
 
     names610 = pd.concat([names610['names'], daniels610['names']])
     names580 = pd.concat([names580['names'], daniels580['names']])
@@ -29,7 +29,7 @@ def combine_data():
     names610.to_csv('data/danielmimi_data_610_names.csv', index=False)
 
     daniels610 = daniels610.drop(columns=['conc_GSH', 'names', '563'])
-    daniels580 = daniels580.drop(columns=['conc_GSH', 'names', '563'])
+    daniels580 = daniels580.drop(columns=['conc_GSSG', 'names', '563'])
     daniels610 = pd.concat([data610, daniels610])
     daniels580 = pd.concat([data580, daniels580])
     daniels580.to_csv('data/danielmimi_data_580.csv', index=False)
@@ -187,10 +187,6 @@ def cut_spectra(df, region=str):
 
 if __name__ == '__main__':
     combine_data()
-
-
-    # continue adding daniels data to dataframes
-    # then try everything with his data
 
 
 

@@ -221,26 +221,35 @@ def integrate_rows(dataframe):
 
     return integration_df
 
+def preprocess5(df):
+    # smooth, remove baseline, df = df.iloc[:, 120:250], normalize, PCA var > 99.5%
+    df = scale_rows_to_max(df)
+    df = smooth_spectra(df)
+    df = remove_baseline(df)
+    df = df.iloc[:, 744:831]
+    plt.plot(df.iloc[105])
+    plt.show()
 
+    return df
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_580.csv')
+    df = pd.read_csv('data/danielmimi_data_610.csv')
     conc = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/danielmimi_data_580_names.csv')
 
-    # plt.plot(df.iloc[130])
-    # plt.show()
 
     # how well does model perform when bad spectra are dropped?
     # bad_spec = [4,5,9,8,10,13,15,16,17,19,20,22,34,39,40,51,53,55,59,64,68,73,74,80,87,97]
     # cutdf = df.drop(bad_spec)
     # cutconc = conc.drop(bad_spec)
 
-    df = scale_rows_to_max(df)
+    plt.plot(df.iloc[2])
+    plt.show()
+    exit()
 
-    df = preprocess4(df)
 
-
-    df.to_csv('data/prepro_methods/allsol_580_pre4_27com.csv', index=False)
+    df = preprocess5(df)
+    df.to_csv('data/prepro_methods/danielmimi_580_pre4_27com.csv', index=False)
 
 
 
