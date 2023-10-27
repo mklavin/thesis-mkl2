@@ -106,11 +106,11 @@ def subtract_solventspec(data, solventspec):
     for index, rowy in data.iterrows():
         row = rowy.values.reshape(-1, 1)
         row = row.flatten()
-        plt.plot(row)
-        plt.plot(solventspec)
-        row = row - solventspec
-        plt.show()
-        print(row)
+        # plt.plot(row)
+        # plt.plot(solventspec)
+        # row = row - solventspec
+        # plt.show()
+        # print(row)
         #row = row.reshape(1, -1)
         normalized_df = pd.DataFrame(row, columns=rowy.index)
         baseline_removed.append(normalized_df)
@@ -131,16 +131,15 @@ def scale_rows_to_max(dataframe):
     return scaled_dataframe
 
 def preprocess1(df):
-    # smooth, remove baseline, df = df.iloc[:, 120:250], normalize, PCA var > 99.5%
+    # smooth, remove baseline, normalize, PCA var > 99.5%
 
     df = smooth_spectra(df)
     df = remove_baseline(df)
-    df = df.iloc[:, 744:831]
     df = normalize(df)
 
-    for i in range(len(df.iloc[0])):
-        plt.plot(df.iloc[i])
-        plt.show()
+    # for i in range(len(df.iloc[0])):
+    #     plt.plot(df.iloc[i])
+    #     plt.show()
 
     for i in range(40):
         pca_Df, ratio = PCA1(df, i)
@@ -233,11 +232,30 @@ def preprocess5(df):
     return df
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/danielmimi_data_610.csv')
-    conc = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    df = pd.read_csv('data/data_580.csv')
+    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/danielmimi_data_580_names.csv')
 
+    plt.plot(np.arange(0, len(df.iloc[3])), df.iloc[3])
+    plt.show()
+    exit()
 
+    df = smooth_spectra(df)
+    df = remove_baseline(df)
+    df = normalize(df)
+
+    total = pd.concat([df, conc], axis=1)
+
+    df = pd.DataFrame(np.corrcoef(total.T))
+    # Add an index column
+    df.reset_index(inplace=True)
+
+    # Sort column 'A' in ascending order while preserving the index
+    sorted_df = df.sort_values(by=1338, ascending=False)
+    sorted_df = sorted_df[['index', 1338]]
+
+    sorted_df.to_csv('data/corr_anal_580.csv', index=False)
+    exit()
     # how well does model perform when bad spectra are dropped?
     # bad_spec = [4,5,9,8,10,13,15,16,17,19,20,22,34,39,40,51,53,55,59,64,68,73,74,80,87,97]
     # cutdf = df.drop(bad_spec)

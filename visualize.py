@@ -63,32 +63,46 @@ def plot_and_cluster_kmeans(dataframe):
     return clustering.labels_
 
 def make_thesisplot(x, y):
-    row_polyfit = pybaselines.polynomial.imodpoly(y, poly_order=10)[0]
+    # Fit a polynomial to the data
+    polyfit_order = 7
+    row_polyfit = pybaselines.polynomial.imodpoly(y, poly_order=polyfit_order)[0]
 
-    plt.rc('font', family='serif')
-    plt.rc('xtick', labelsize='x-small')
-    plt.rc('ytick', labelsize='x-small')
+    # Customize plot styles for better readability
+    plt.rc('font', family='serif', size=12)
+    plt.rc('xtick', labelsize='small')
+    plt.rc('ytick', labelsize='small')
 
-    fig = plt.figure()
-    ax = fig.add_subplot(2, 2, 1)
+    # Create a figure and add subplots in a 2x1 grid
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))  # Adjust the figure size to your preference
 
-    ax.plot(x, y, color='b', ls='solid')
-    ax.plot(x, row_polyfit, color='r', ls='solid')
-    ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Temperature (K)')
+    # Plot the data and the polynomial fit in the upper subplot
+    ax1.plot(x, y, color='b', linestyle='solid', label='Data')
+    ax1.plot(x, row_polyfit, color='r', linestyle='solid', label=f'Polynomial Fit (Order {polyfit_order})')
+    ax1.set_xlabel('Raman Shift (cm⁻¹)')
+    ax1.set_ylabel('Intensity')
+    ax1.legend()  # Add a legend to the upper subplot
 
-    ax2 = fig.add_subplot(2, 2,2)
-    ax2.plot(x, y-row_polyfit)
+    # Plot the residual (data - fit) in the lower subplot
+    residual = y - row_polyfit
+    ax2.plot(x, residual, color='g', linestyle='solid', label='Residual')
+    ax2.set_xlabel('Raman Shift (cm⁻¹)')
+    ax2.set_ylabel('Intensity')
+    ax2.legend()  # Add a legend to the lower subplot
+
+    # Save the plot to a file for inclusion in your paper
+    plt.savefig('thesis_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+
+    # Display the plot (optional)
     plt.show()
-    return None
 
+    return None  # This line is not needed
 
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
     data2 = pd.read_csv('data/data_610_BR_NM.csv')
     soldata = pd.read_csv('data/data_580.csv')
 
-    make_thesisplot(np.arange(0, len(soldata.iloc[5])), soldata.iloc[5])
+    make_thesisplot(np.arange(250, len(soldata.iloc[5])+250), soldata.iloc[5])
     exit()
 
     # uncover to plot different solvents
