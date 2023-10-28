@@ -232,7 +232,7 @@ def preprocess5(df):
     return df
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_580.csv')
+    df = pd.read_csv('data/data_610.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/danielmimi_data_580_names.csv')
 

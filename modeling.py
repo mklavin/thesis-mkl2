@@ -8,6 +8,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas as pd
+from preprocessing import normalize
 import math
 import joblib
 from sklearn.preprocessing import MinMaxScaler
@@ -31,8 +32,8 @@ def evaluate_withmodels(x,y,names, n):
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    # models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
-    models = [MLP]
+    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    #models = []
 
     results = []
     for j in models:
@@ -95,11 +96,13 @@ def new_trainingandtestsplit(x, y, names, split):
     return trainingx, testingx, trainingy, testingy
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_methods/allsol_580_pre4_27com.csv')
+    x1 = pd.read_csv('data/corr_only_data580.csv')
     x2 = pd.read_csv('data/prepro_methods/removerows_580_pre1_6com.csv')
     y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     y2 = pd.read_csv('data/removerows_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/data_580_names.csv')
+
+    x1 = normalize(x1)
 
     evaluate_withmodels(x1, y1, names, .75)
 

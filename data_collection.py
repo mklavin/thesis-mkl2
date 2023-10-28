@@ -185,8 +185,44 @@ def cut_spectra(df, region=str):
 
     return df.iloc[:, start:end]
 
+# def select_corr_points(df, corr):
+#     final_df = pd.DataFrame(columns=[np.arange(0,len(df))])
+#     print(final_df)
+#     df = df.T
+#     for i in corr['index']:
+#         row = df.iloc[i]
+#         final_df.loc[len(df.index)] = row
+#     return final_df
+
+def select_corr_points(df, corr):
+    # Initialize an empty list to store DataFrames
+    selected_rows = []
+
+    # Transpose the original DataFrame
+    df = df.T
+
+    # Remove rows where values in column 'A' are less than 0.5
+    corr = corr[corr['1338'] >= 0.5]
+
+    # Loop through the indices in 'corr'
+    for i in corr['index']:
+        # Check if the index is within the valid range of 'df'
+        if i < len(df):
+            row = df.iloc[i]
+            selected_rows.append(row)
+
+    # Concatenate the selected rows into a new DataFrame
+    final_df = pd.concat(selected_rows, axis=1).T
+
+    return final_df.T
+
 if __name__ == '__main__':
-    combine_data()
+    corr = pd.read_csv('data/corr_anal_580.csv')
+    data = pd.read_csv('data/data_580.csv')
+
+    df = select_corr_points(data, corr)
+
+    df.to_csv('data/corr_only_data580.csv', index=False)
 
 
 
