@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import pybaselines.polynomial
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA, FastICA
-import numpy as np
-from scipy.signal import find_peaks
 from sklearn.preprocessing import StandardScaler
 from scipy.signal import savgol_filter, argrelmin
 

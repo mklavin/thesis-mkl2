@@ -36,7 +36,7 @@ def put_together_preprocess_search(data, conc, region:str):
     for n in total_perm:
         df = data
         for i in n:
-            # if i == 'smoothing':              # uncover to check for smoothing, for some reason doesn't work with baseline stuff
+            # if i == 'smoothing':              # uncover to check for smoothing, only works with polynomial baseline fitting
             #     df = smooth_spectra(df)
             if i == 'normalizing':
                 df = normalize(df)
@@ -46,8 +46,8 @@ def put_together_preprocess_search(data, conc, region:str):
                 df = baseline_search(df, conc)
 
         df = pd.concat([df, conc], axis=1)
-        df = pd.DataFrame(np.corrcoef(df.T))
-        sorted_df = df.sort_values(by=1338, ascending=False)
+        df = pd.DataFrame(np.corrcoef(df.T)) # CALCULATING COVARIANCE MATRIX
+        sorted_df = df.sort_values(by=1338, ascending=False) # only select the column that corresponds to concentrations
         sorted_df = sorted_df[[1338]].iloc[1:]
         results.append(max(sorted_df[1338]))
 
