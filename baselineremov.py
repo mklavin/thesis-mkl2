@@ -26,7 +26,6 @@ def polynomial_search(df, conc):
             for index, rowy in df.iterrows():
                 row = rowy.values.reshape(-1, 1)
                 row = row.flatten()
-                print(j, x)
                 row_polyfit = j(row, poly_order=x)[0]
                 row = row - row_polyfit
                 row = row.flatten()
@@ -52,7 +51,7 @@ def polynomial_search(df, conc):
 
     # max_index = results.index(max(results))
 
-    print(results)
+    print(max(results, key=lambda x: x[2]))
 
     return None
 
@@ -111,8 +110,8 @@ def baseline_search(df, conc):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_580.csv')
-    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    df = pd.read_csv('data/data_610.csv')
+    conc = pd.read_csv('data/data_610_concentrations_GSH.csv')
 
 
-    baseline_search(df, conc)
+    polynomial_search(df, conc)
