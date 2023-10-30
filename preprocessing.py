@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.decomposition import PCA, FastICA
 from sklearn.preprocessing import StandardScaler
 from scipy.signal import savgol_filter, argrelmin
+import numpy as np
 
 """
 ALL PREPROCESSING METHODS
@@ -171,9 +172,14 @@ def remove_baseline(spectra, baseline_func, order=None):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_580.csv')
+    df = pd.read_csv('data/prepro_610.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/danielmimi_data_580_names.csv')
+
+    plt.plot(df.iloc[0])
+    plt.plot(df.iloc[1])
+    plt.show()
+
 
 
 
