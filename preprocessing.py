@@ -172,13 +172,19 @@ def remove_baseline(spectra, baseline_func, order=None):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/prepro_610.csv')
+    df = pd.read_csv('data/prepro_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/danielmimi_data_580_names.csv')
 
-    plt.plot(df.iloc[0])
-    plt.plot(df.iloc[1])
+    plt.plot(df.iloc[20])
+    plt.plot(df.iloc[30])
     plt.show()
+    exit()
+
+    df, ratio = PCA1(df, 15)
+    print(sum(ratio))
+
+    df.to_csv('data/test.csv', index=False)
 
 
 
