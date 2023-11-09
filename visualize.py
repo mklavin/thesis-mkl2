@@ -6,6 +6,7 @@ import seaborn as sns
 from sklearn.cluster import DBSCAN, KMeans
 from umap import UMAP
 import pybaselines.polynomial
+from collections import Counter
 
 def separate_by_sol_andplot(data, indices):
     transposed_rows = []  # Collect transposed rows in a list
@@ -62,7 +63,7 @@ def plot_and_cluster_kmeans(dataframe):
     plt.show()
     return clustering.labels_
 
-def make_thesisplot(x, y):
+def make_baselineplot(x, y):
     # Fit a polynomial to the data
     polyfit_order = 7
     row_polyfit = pybaselines.polynomial.imodpoly(y, poly_order=polyfit_order)[0]
@@ -97,12 +98,73 @@ def make_thesisplot(x, y):
 
     return None  # This line is not needed
 
+def make_sampledist_plot(conc):
+    # Extract the data and compute value counts
+    x = conc['conc_GSSG']
+    x_counter = x.value_counts()
+
+    # Set up Seaborn for improved aesthetics
+    sns.set(style="whitegrid", font_scale=1.2)
+
+    # Create the horizontal bar plot
+    plt.figure(figsize=(8, 6))  # Set the figure size
+    ax = x_counter.plot(kind='barh', color='hotpink')
+
+    # Customize the plot labels and title
+    ax.set_xlabel('Number of Samples', labelpad=15)  # X-axis label
+    ax.set_ylabel('GSSG Concentration (mM)', labelpad=15)  # Y-axis label
+    ax.set_title('Distribution of Sample Concentrations in the 580 Region', pad=20)  # Title
+
+    # Customize ticks and labels
+    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))  # Show only integer ticks on the x-axis
+    plt.xticks(fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    # Remove top and right spines
+    sns.despine()
+
+    # Save the plot as a high-resolution image (optional)
+    plt.savefig("sample_distribution_plot580.png", dpi=300, bbox_inches='tight')
+
+    # Display the plot
+    plt.show()
+
+    return None
+
+def make_barplot_concetrations(df):
+    # Count the number of values in each column
+    value_counts = df.count()
+
+    # Create a bar plot
+    plt.figure(figsize=(8, 6))
+    value_counts.plot(kind='bar', color='hotpink')
+
+    # Customize plot labels and title
+    plt.xlabel('Solvents', labelpad=15)
+    plt.ylabel('Number of Samples', labelpad=15)
+    plt.title('Number of Samples in the 610 Region for Each Solvent Type', pad=20)
+
+    # Customize tick labels
+    plt.xticks(range(len(df.columns)), df.columns, rotation=0, fontsize=12)
+    plt.yticks(fontsize=12)
+
+    # Save the plot as a high-resolution image (optional)
+    plt.savefig("solvent_distribution_plot610.png", dpi=300, bbox_inches='tight')
+
+    # Display the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
     data2 = pd.read_csv('data/data_610_BR_NM.csv')
     soldata = pd.read_csv('data/data_580.csv')
+    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    sol = pd.read_csv('data/separate_by_sol_610.csv')
 
-    make_thesisplot(np.arange(250, len(soldata.iloc[5])+250), soldata.iloc[5])
+
+    make_barplot_concetrations(sol)
     exit()
 
     # uncover to plot different solvents
