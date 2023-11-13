@@ -33,7 +33,8 @@ def evaluate_withmodels(x,y,names, n):
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    #models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [LR]
 
     results = []
     for j in models:
@@ -51,10 +52,27 @@ def evaluate_withmodels(x,y,names, n):
             i += 1
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'30 fold cv score:', np.average(listy)])
-        # print(y_pred, y_test)
-        # plt.scatter(y_pred, y_test)
-        # plt.plot(np.arange(0, 90), np.arange(0, 90))
-        # plt.show()
+        print(y_pred, y_test)
+        # Scatter plot
+        plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
+
+        # Diagonal line for reference
+        plt.plot(np.arange(0, 90), np.arange(0, 90), color='red', linestyle='--', label='Ideal Line')
+
+        # Adding labels and title
+        plt.xlabel('Predicted Values')
+        plt.ylabel('Actual Values')
+        plt.title('Actual vs. Predicted Values of GSH (mM)')
+
+        # Displaying the legend
+        plt.legend()
+
+        # Adding grid for better readability
+        plt.grid(True)
+        plt.savefig('predvsactual_GSH.png')
+
+        # Show the plot
+        plt.show()
     print(results)
     return None
 
@@ -101,9 +119,9 @@ def new_trainingandtestsplit(x, y, names, split):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/test.csv')
-    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/data_580_names.csv')
+    x1 = pd.read_csv('data/prepro_610.csv')
+    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/data_610_names.csv')
 
 
     evaluate_withmodels(x1, y1, names, .75)

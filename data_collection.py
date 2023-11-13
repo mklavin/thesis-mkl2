@@ -167,13 +167,13 @@ def sort_usingsol_index(df, df2, key):
     result = pd.DataFrame()
     for i in df[key]:
         if is_nan_string(i) == True:
-            #result.to_csv('data/cut_BSAdata_580_BR_NM_concentrations_GSSG.csv', index=False)
+            result.to_csv('data/phos_data_580.csv', index=False)
             break
         i = int(i)
         row = df2.iloc[i]
         row = pd.DataFrame([row])
         result = pd.concat([result, row], ignore_index=True)
-    return None
+    return result
 
 def cut_spectra(df, region=str):
     if region == '580':
@@ -218,11 +218,15 @@ def select_corr_points(df, corr):
 
 if __name__ == '__main__':
     corr = pd.read_csv('data/corr_anal_580.csv')
-    data = pd.read_csv('data/data_580.csv')
+    data = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    data1 = pd.read_csv('data/separate_by_sol_580.csv')
 
-    df = select_corr_points(data, corr)
+    x = sort_usingsol_index(data1, data, 'phos')
+    x.to_csv('data/phos_data_580_concentrations_GSSG.csv', index=False)
 
-    df.to_csv('data/corr_only_data580.csv', index=False)
+
+
+
 
 
 

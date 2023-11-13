@@ -158,7 +158,7 @@ def make_barplot_concetrations(df):
 
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
-    data2 = pd.read_csv('data/data_610_BR_NM.csv')
+    data2 = pd.read_csv('data/prepro_methods/data_610_BR_NM.csv')
     soldata = pd.read_csv('data/data_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     sol = pd.read_csv('data/separate_by_sol_610.csv')
