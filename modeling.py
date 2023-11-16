@@ -33,21 +33,7 @@ def find_data_onbadspec(listy, x, y, names):
     print('names', namey)
     return None
 
-def create_trainingandtest(x, y):
-    indices = np.where(y.isna())[0]
-    x = np.array(x)
-    x = np.delete(x, indices, axis=0)
-    y = y.dropna()
-    y = np.array(y)
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.15)
-    return x_train, x_test, y_train, y_test
-
 def evaluate_withmodels(x, y, names, n):
-    indices = [28, 50, 20, 4, 63]
-    x = x.drop(indices)
-    y = y.drop(indices)
-    names = names.drop(indices)
-
     # models:
     RF = RandomForestRegressor()
     SVM = svm.SVR()
@@ -58,7 +44,6 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
-    models = [LR]
 
     badspec = []
     results = []
@@ -75,10 +60,10 @@ def evaluate_withmodels(x, y, names, n):
 
             for i in range(len(y_pred)):
                 try:
-                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 5:
+                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 10:
                         badspec.append(list(x_test.iloc[i]))
                 except TypeError:
-                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 5:
+                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 10:
                         badspec.append(list(x_test.iloc[i]))
 
             mae = mean_absolute_error(y_test, y_pred)
@@ -86,33 +71,13 @@ def evaluate_withmodels(x, y, names, n):
             i += 1
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'30 fold cv score:', np.average(listy)])
-        # UNCOVER FOR A PLOT OF PREDICTED VERSUS TEST
-        # print(y_pred, y_test)
-        # # Scatter plot
-        # plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
-        #
-        # # Diagonal line for reference
-        # plt.plot(np.arange(0, 90), np.arange(0, 90), color='red', linestyle='--', label='Ideal Line')
-        #
-        # # Adding labels and title
-        # plt.xlabel('Predicted Values')
-        # plt.ylabel('Actual Values')
-        # plt.title('Actual vs. Predicted Values of GSH (mM)')
-        #
-        # # Displaying the legend
-        # plt.legend()
-        #
-        # # Adding grid for better readability
-        # plt.grid(True)
-        # plt.savefig('predvsactual_GSH.png')
-        #
-        # # Show the plot
-        # plt.show()
     print(results)
     return find_data_onbadspec(badspec, x, y, names)
 
 
 def new_trainingandtestsplit(x, y, names, split):
+    # makes a training and test split that has an even amount of PEG, BSA, and phos solvent samples
+    # sorts them by names
     def categorize_row(row):
         if 'BSA' in row:
             return 1
@@ -154,26 +119,12 @@ def new_trainingandtestsplit(x, y, names, split):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_580.csv')
-    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/data_580_names.csv')
+    x1 = pd.read_csv('data/prepro_610.csv')
+    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/data_610_names.csv')
 
+    evaluate_withmodels(x1, y1, names, .8)
 
-
-    # indices = [28, 50, 20, 4, 63]
-    # for i in indices:
-    #     plt.plot(x1.iloc[i])
-    #     plt.title(str(names.iloc[i]))
-    #     plt.show()
-    #
-    # exit()
-
-    x = evaluate_withmodels(x1, y1, names, .75)
-    print(x)
-
-
-    # how to find what spectra are better predicted?
-    # link names and test vals
 
 
 

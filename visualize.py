@@ -156,6 +156,30 @@ def make_barplot_concetrations(df):
 
     return None
 
+def plot_predicted_versus_test(y_pred, y_test):
+    # Scatter plot
+    plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
+
+    # Diagonal line for reference
+    plt.plot(np.arange(0, 90), np.arange(0, 90), color='red', linestyle='--', label='Ideal Line')
+
+    # Adding labels and title
+    plt.xlabel('Predicted Values')
+    plt.ylabel('Actual Values')
+    plt.title('Actual vs. Predicted Values of GSH (mM)')
+
+    # Displaying the legend
+    plt.legend()
+
+    # Adding grid for better readability
+    plt.grid(True)
+    plt.savefig('predvsactual_GSH.png')
+
+    # Show the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
     data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
     data2 = pd.read_csv('data/prepro_methods/data_610_BR_NM.csv')
