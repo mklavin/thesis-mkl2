@@ -9,20 +9,29 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import pandas as pd
 import matplotlib.pyplot as plt
-from preprocessing import normalize
-import math
-import joblib
-from sklearn.preprocessing import MinMaxScaler
 
 def find_data_onbadspec(listy, x, y, names):
+    """
+    :param listy: list of spectra that returned error specified by if statement
+    :param x: original features
+    :param y: original labels
+    :param names: names of the spectra in x
+    :return: print the indices, concentrations, and
+    """
     x = np.array(x)
+    y = np.array(y)
     indices = []
-    data = []
+    conc = []
+    namey = []
     for i in range(len(listy)):
         row_index = np.where(np.all(x == listy[i], axis=1))[0]
-        data.append(list([row_index, y.iloc[row_index], names.iloc[row_index]]))
-    print(data)
-    return data
+        indices.append(row_index)
+        conc.append((y[row_index]))
+        namey.append(names.iloc[row_index])
+    print('indices:', indices)
+    print('concentrations:', conc)
+    print('names', namey)
+    return None
 
 def create_trainingandtest(x, y):
     indices = np.where(y.isna())[0]
@@ -33,7 +42,7 @@ def create_trainingandtest(x, y):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.15)
     return x_train, x_test, y_train, y_test
 
-def evaluate_withmodels(x,y,names, n):
+def evaluate_withmodels(x, y, names, n):
     indices = [28, 50, 20, 4, 63]
     x = x.drop(indices)
     y = y.drop(indices)
@@ -48,7 +57,7 @@ def evaluate_withmodels(x,y,names, n):
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    #models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
     models = [LR]
 
     badspec = []
@@ -57,22 +66,29 @@ def evaluate_withmodels(x,y,names, n):
         model = j
         i = 0
         listy = []
-        while i < 3:
+        while i < 5:
             x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
             y_pred = np.maximum(y_pred, 0)
             # mae = mean_absolute_percentage_error(list(y_test['conc_GSH'].replace(0, 1)), y_pred)
+
             for i in range(len(y_pred)):
-                if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 10:
-                    badspec.append(list(x_test.iloc[i]))
+                try:
+                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 5:
+                        badspec.append(list(x_test.iloc[i]))
+                except TypeError:
+                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 5:
+                        badspec.append(list(x_test.iloc[i]))
+
             mae = mean_absolute_error(y_test, y_pred)
             listy.append(mae)
             i += 1
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'30 fold cv score:', np.average(listy)])
+        # UNCOVER FOR A PLOT OF PREDICTED VERSUS TEST
         # print(y_pred, y_test)
-        # Scatter plot
+        # # Scatter plot
         # plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
         #
         # # Diagonal line for reference
@@ -142,15 +158,18 @@ if __name__ == '__main__':
     y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/data_580_names.csv')
 
-    indices = [28, 50, 20, 4, 63]
-    for i in indices:
-        plt.plot(x1.iloc[i])
-        plt.title(str(names.iloc[i]))
-        plt.show()
 
-    exit()
+
+    # indices = [28, 50, 20, 4, 63]
+    # for i in indices:
+    #     plt.plot(x1.iloc[i])
+    #     plt.title(str(names.iloc[i]))
+    #     plt.show()
+    #
+    # exit()
 
     x = evaluate_withmodels(x1, y1, names, .75)
+    print(x)
 
 
     # how to find what spectra are better predicted?
