@@ -179,14 +179,10 @@ def baseline_search(df, conc, region):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/phos_data_580.csv')
-    conc = pd.read_csv('data/phos_data_580_concentrations_GSSG.csv')
+    df = pd.read_csv('data/data_580.csv')
+    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
     df = put_together_preprocess_search(df, conc, '580')
     print(df)
-    df.to_csv('data/phos_prepro_580.csv', index=False)
+    #df.to_csv('data/phos_prepro_580.csv', index=False)
 
-
-    # fix so that it optomizes the max ratio between the actual peak vals, not just the max value!
-    # figure out what's going on with preprocessing
-    # restrict region for max vals

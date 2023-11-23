@@ -5,6 +5,7 @@ import numpy as np
 import math
 
 def combine_data():
+    # used to combine daniels raman data and my raman data
     daniels580 = pd.read_csv('data/danielsdata_580.csv')
     daniels610 = pd.read_csv('data/danielsdata_610.csv')
 
@@ -38,6 +39,9 @@ def combine_data():
     return None
 
 def separate_bysol(df):
+    # find indices of each solution
+    # used for analysis and semi-random training and test split
+
     # Define the substrings to search for
     substrings = ['BSA', 'PEG', 'phos']
 
@@ -82,6 +86,9 @@ def is_nan_string(string):
         return False
 
 def stitch_spectra(spec_580, spec_610):
+    # combine two spectral windows
+    # will use later
+
     # Initialize an empty list to store DataFrames for concatenation
     combined_dfs = []
 
@@ -132,6 +139,9 @@ def stitch_spectra(spec_580, spec_610):
     return newdata
 
 def gather_data():
+    # loops through all of the raw data files in data and converts to one csv file
+    # also makes files with the name of data and labels
+
     folder_path = 'data/daniels_data'  # filepath to folder of data
     n = 1340  # length of spectra
     columns = [i for i in range(1, n)]  # create list of same length
@@ -160,10 +170,17 @@ def gather_data():
     return contains_580, contains_610
 
 def drop_missingvals(spectra):
+    # raman spectrometer is missing a pixel at the 563rd position
     spectra = spectra.drop(columns='563')
     return spectra
 
 def sort_usingsol_index(df, df2, key):
+    """
+    :param df: dataframe of all data
+    :param df2: dataframe containing indices of different solvents
+    :param key: which solvent to search for
+    :return: dataframe of samples in specified solvent
+    """
     result = pd.DataFrame()
     for i in df[key]:
         if is_nan_string(i) == True:
@@ -185,16 +202,9 @@ def cut_spectra(df, region=str):
 
     return df.iloc[:, start:end]
 
-# def select_corr_points(df, corr):
-#     final_df = pd.DataFrame(columns=[np.arange(0,len(df))])
-#     print(final_df)
-#     df = df.T
-#     for i in corr['index']:
-#         row = df.iloc[i]
-#         final_df.loc[len(df.index)] = row
-#     return final_df
-
 def select_corr_points(df, corr):
+    # used to select for correlated points of a certain value
+
     # Initialize an empty list to store DataFrames
     selected_rows = []
 
@@ -222,7 +232,6 @@ if __name__ == '__main__':
     data1 = pd.read_csv('data/separate_by_sol_580.csv')
 
     x = sort_usingsol_index(data1, data, 'phos')
-    x.to_csv('data/phos_data_580_concentrations_GSSG.csv', index=False)
 
 
 

@@ -37,13 +37,14 @@ def evaluate_withmodels(x, y, names, n):
     # models:
     RF = RandomForestRegressor()
     SVM = svm.SVR()
-    GBRT = GradientBoostingRegressor(alpha=.02, n_estimators=500)
-    MLP = MLPRegressor(random_state=1, max_iter=500)
+    GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
+    MLP = MLPRegressor(random_state=1, max_iter=5000)
     KR = KernelRidge()
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [LR]
 
     badspec = []
     results = []
@@ -72,7 +73,7 @@ def evaluate_withmodels(x, y, names, n):
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'30 fold cv score:', np.average(listy)])
     print(results)
-    return find_data_onbadspec(badspec, x, y, names)
+    return find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
 
 
 def new_trainingandtestsplit(x, y, names, split):
@@ -119,9 +120,9 @@ def new_trainingandtestsplit(x, y, names, split):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_610.csv')
-    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
-    names = pd.read_csv('data/data_610_names.csv')
+    x1 = pd.read_csv('data/prepro_580.csv')
+    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/data_580_names.csv')
 
     evaluate_withmodels(x1, y1, names, .8)
 

@@ -66,7 +66,7 @@ def plot_and_cluster_kmeans(dataframe):
 def make_baselineplot(x, y):
     # Fit a polynomial to the data
     polyfit_order = 7
-    row_polyfit = pybaselines.polynomial.imodpoly(y, poly_order=polyfit_order)[0]
+    row_polyfit = pybaselines.spline.irsqr(y)[0]
 
     # Customize plot styles for better readability
     plt.rc('font', family='serif', size=12)
@@ -78,7 +78,7 @@ def make_baselineplot(x, y):
 
     # Plot the data and the polynomial fit in the upper subplot
     ax1.plot(x, y, color='b', linestyle='solid', label='Data')
-    ax1.plot(x, row_polyfit, color='r', linestyle='solid', label=f'Polynomial Fit (Order {polyfit_order})')
+    ax1.plot(x, row_polyfit, color='r', linestyle='solid', label='Iterative Reweighted Spline Quantile Regression Fit')
     ax1.set_xlabel('Raman Shift (cm⁻¹)')
     ax1.set_ylabel('Intensity')
     ax1.legend()  # Add a legend to the upper subplot
@@ -181,14 +181,14 @@ def plot_predicted_versus_test(y_pred, y_test):
     return None
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/pca_data/allsol_580_BR_NM_10com.csv')
+    data = pd.read_csv('data/data_580.csv')
     data2 = pd.read_csv('data/prepro_methods/data_610_BR_NM.csv')
     soldata = pd.read_csv('data/data_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     sol = pd.read_csv('data/separate_by_sol_610.csv')
 
 
-    make_barplot_concetrations(sol)
+    make_baselineplot(np.arange(0, len(data.iloc[3])), data.iloc[3])
     exit()
 
     # uncover to plot different solvents
