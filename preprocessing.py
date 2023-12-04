@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import pybaselines.spline
 from sklearn.decomposition import PCA, FastICA
 from sklearn.preprocessing import StandardScaler
 from scipy.signal import savgol_filter, argrelmin
@@ -76,16 +77,14 @@ def scale_rows_to_max(dataframe, region:str):
     :param region: 580 or 610 spectral region, determines where to search for the water peak
     :return: dataframe of raman spectra scaled to the water peak
     """
-    scaled_dataframe = dataframe.copy()  # Make a copy of the input DataFrame to avoid modifying it
 
     # Calculate the maximum value in each row
     if region == '610':
         max_values = dataframe.iloc[:, 1063:].max(axis=1)
     if region == '580':
-        max_values = dataframe.iloc[:, 650:801].max(axis=1)
+        max_values = dataframe.iloc[:, 650:790].max(axis=1)
 
-    # Scale each row to have the same maximum value (target_max)
-    scaled_dataframe = scaled_dataframe.mul(20 / max_values, axis=0)
+    scaled_dataframe = dataframe.mul(20 / max_values, axis=0)
 
     return scaled_dataframe
 
@@ -172,21 +171,18 @@ def remove_baseline(spectra, baseline_func, order=None):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_610.csv')
-    conc = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    df = pd.read_csv('data/phos_data_580.csv')
+    conc = pd.read_csv('data/phos_data_0_concentrations_GSH.csv')
     names = pd.read_csv('data/danielmimi_data_580_names.csv')
 
+    df = remove_baseline(df, pybaselines.spline.irsqr)
 
+    df = scale_rows_to_max(df, '580')
 
-    plt.plot(df.iloc[10])
+    normalize(df)
 
-    plt.show()
     exit()
 
-    df, ratio = PCA1(df, 15)
-    print(sum(ratio))
-
-    df.to_csv('data/test.csv', index=False)
 
 
 

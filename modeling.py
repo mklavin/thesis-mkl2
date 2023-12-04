@@ -34,6 +34,10 @@ def find_data_onbadspec(listy, x, y, names):
     return None
 
 def evaluate_withmodels(x, y, names, n):
+    x = x.drop([14,76,103,47])
+    y = y.drop([14,76,103,47])
+    names = names.drop([14,76,103,47])
+
     # models:
     RF = RandomForestRegressor()
     SVM = svm.SVR()
@@ -44,7 +48,7 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
-    models = [LR]
+    models = [MLP]
 
     badspec = []
     results = []
@@ -52,7 +56,7 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 5:
+        while i < 6:
             x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
@@ -61,17 +65,17 @@ def evaluate_withmodels(x, y, names, n):
 
             for i in range(len(y_pred)):
                 try:
-                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 10:
+                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 5:
                         badspec.append(list(x_test.iloc[i]))
                 except TypeError:
-                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 10:
+                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 5:
                         badspec.append(list(x_test.iloc[i]))
 
             mae = mean_absolute_error(y_test, y_pred)
             listy.append(mae)
             i += 1
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
-        results.append([j,'30 fold cv score:', np.average(listy)])
+        results.append([j,'MAE:', np.average(listy)])
     print(results)
     return find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
 
@@ -124,7 +128,7 @@ if __name__ == '__main__':
     y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/data_580_names.csv')
 
-    evaluate_withmodels(x1, y1, names, .8)
+    evaluate_withmodels(x1, y1, names, .80)
 
 
 

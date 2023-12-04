@@ -24,7 +24,7 @@ def put_together_preprocess_search(data, conc, region:str):
     uses correlation analysis to evaluate
     warning: takes a long time to run!
     """
-    options = ['normalizing', 'standardize', 'baseline removal'] # possible preprocessing
+    options = ['normalizing', 'baseline removal', 'standardize'] # possible preprocessing
     #  UNCOVER IF U WANT TO DO CHOOSE 1 OR CHOOSE 2
     # len_permutations = [2, 3]
     # total_perm = []
@@ -146,7 +146,6 @@ def baseline_search(df, conc, region):
             row = rowy.values.reshape(-1, 1)
             row = row.flatten()
             row_polyfit = j(row)[0]
-            # plt.title(str(i))
             # plt.plot(row)
             # plt.plot(row_polyfit)
             # plt.show()
@@ -180,9 +179,21 @@ def baseline_search(df, conc, region):
 
 if __name__ == '__main__':
     df = pd.read_csv('data/data_580.csv')
-    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/data_580_names.csv')
+    conc = pd.read_csv('data/phos_data_580_concentrations_GSSG.csv')
+
+    for i in range(len(df)):
+        plt.plot(df.iloc[i])
+        plt.title(str(names.iloc[i]))
+        plt.show()
+
+    exit()
+
 
     df = put_together_preprocess_search(df, conc, '580')
     print(df)
     #df.to_csv('data/phos_prepro_580.csv', index=False)
+
+    # VISAULLY CHECK BASELINE REMOVAL
+    # LOOKS WEIRD!
 
