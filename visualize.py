@@ -7,7 +7,9 @@ from sklearn.cluster import DBSCAN, KMeans
 from umap import UMAP
 import pybaselines.polynomial
 from collections import Counter
-from preprocessing import PCA1
+from preprocessing import PCA1, scale_rows_to_max
+
+# MOST PLOTS ARE PARTIALLY AI GENERATED VIA CHATGPT
 
 def separate_by_sol_andplot(data, indices):
     transposed_rows = []  # Collect transposed rows in a list
@@ -30,17 +32,17 @@ def separate_by_sol_andplot(data, indices):
     return output.T
 
 def plot_and_cluster_DBSCAN(dataframe):
-    clustering = DBSCAN(eps=1).fit(dataframe)
+    clustering = DBSCAN(eps=60).fit(dataframe)
 
     # uncover to make scatterplot
     scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.3, palette='gist_ncar',
                     hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
-                    hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
+                    hue=clustering.labels_).set_title(f"Neighbors= {45}, eps=5")
     sns.set(font_scale=2)
     plt.tick_params(axis='both', which='major', labelsize=14)
     plt.xlabel('UMAP1', fontsize=16)
     plt.ylabel('UMAP2', fontsize=16)
-    plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
+    #plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
     scatter_fig = scatter_plot.get_figure()
     scatter_fig.savefig('graph2.png', dpi= 1200)
     plt.show()
@@ -92,7 +94,7 @@ def make_baselineplot(x, y):
     ax2.legend()  # Add a legend to the lower subplot
 
     # Save the plot to a file for inclusion in your paper
-    plt.savefig('thesis_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+    plt.savefig('baseline_removal_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
 
     # Display the plot (optional)
     plt.show()
@@ -181,11 +183,47 @@ def plot_predicted_versus_test(y_pred, y_test):
 
     return None
 
+
+def make_solvent_comparison_plot(BSA, PEG, phos):
+    # Define colors for each line
+    colors = ['blue', 'green', 'red']
+
+    # Plot each spectrum with a specific color
+    plt.plot(BSA, label='BSA', color=colors[0])
+    plt.plot(PEG, label='PEG', color=colors[1])
+    plt.plot(phos, label='phos', color=colors[2])
+
+    plt.gcf().set_size_inches(10, 5)
+
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12, fontfamily= 'serif')
+    plt.ylabel('Intensity', fontsize = 12, fontfamily= 'serif')
+    plt.title('Solvent Comparison of Raman Spectra', fontsize = 12, fontfamily= 'serif')
+
+    # Customize ticks and labels
+    plt.xticks(fontsize=12, fontfamily= 'serif')  # X-axis tick font size
+    plt.yticks(fontsize=12, fontfamily= 'serif')  # Y-axis tick font size
+
+    # Set x-axis ticks to display integers
+    x_ticks_positions = np.arange(0, 1500, 143.181818)
+    x_ticks_labels = np.arange(400, 1500, 100) #[str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    # Add legend
+    plt.legend()
+
+    # Save figure
+    plt.savefig('solvent_comparison.png', dpi=1200, bbox_inches='tight')
+
+    # Show the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
     data = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-
 
     # PCA1 vs PCA2
     data, ratio = PCA1(data, 2)
