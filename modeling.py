@@ -34,15 +34,15 @@ def find_data_onbadspec(listy, x, y, names):
     return None
 
 def evaluate_withmodels(x, y, names, n):
-    x = x.drop([14,76,103,47])
-    y = y.drop([14,76,103,47])
-    names = names.drop([14,76,103,47])
+    # x = x.drop([88])
+    # y = y.drop([88])
+    # names = names.drop([88])
 
     # models:
     RF = RandomForestRegressor()
     SVM = svm.SVR()
     GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
-    MLP = MLPRegressor(random_state=1, max_iter=5000)
+    MLP = MLPRegressor(random_state=1, hidden_layer_sizes=(100, ), solver='lbfgs', max_iter=5000)
     KR = KernelRidge()
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
@@ -56,7 +56,7 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 6:
+        while i < 8:
             x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
@@ -124,11 +124,14 @@ def new_trainingandtestsplit(x, y, names, split):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_580.csv')
-    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/data_580_names.csv')
+    x1 = pd.read_csv('data/prepro_610.csv')
+    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/data_610_names.csv')
 
     evaluate_withmodels(x1, y1, names, .80)
+
+
+    # LBFGS solver works best for 610 region and SGD solver works best for 580 region
 
 
 
