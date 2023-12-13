@@ -228,6 +228,7 @@ def select_corr_points(df, corr):
     return final_df.T
 
 def get_concentration_BSA(absp, pathlength):
+    # beers law, use this function during sample prep to get the correct concentration of BSA
     x = absp/43824*pathlength/1000
     print('concentration of BSA:', x, 'mM')
     return None
