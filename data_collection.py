@@ -41,6 +41,7 @@ def combine_data():
 def separate_bysol(df):
     # find indices of each solution
     # used for analysis and semi-random training and test split
+    # df contains spectra names 
 
     # Define the substrings to search for
     substrings = ['BSA', 'PEG', 'phos']
@@ -225,6 +226,12 @@ def select_corr_points(df, corr):
     final_df = pd.concat(selected_rows, axis=1).T
 
     return final_df.T
+
+def get_concentration_BSA(absp, pathlength):
+    x = absp/43824*pathlength/1000
+    print('concentration of BSA:', x, 'mM')
+    return None
+
 
 if __name__ == '__main__':
     corr = pd.read_csv('data/corr_anal_580.csv')
