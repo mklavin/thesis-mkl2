@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+# functions used for organizing raw Raman data files
+
 def combine_data():
     # used to combine daniels raman data and my raman data
     daniels580 = pd.read_csv('data/danielsdata_580.csv')
@@ -228,8 +230,8 @@ def select_corr_points(df, corr):
     return final_df.T
 
 def get_concentration_BSA(absp, pathlength):
-    # beers law, use this function during sample prep to get the correct concentration of BSA
-    x = absp/43824*pathlength/1000
+    # beers law, use this function during sample prep to get the correct concentration of BSA (0.6 mM)
+    x = absp/(43824*pathlength)*1000
     print('concentration of BSA:', x, 'mM')
     return None
 
