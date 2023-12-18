@@ -178,21 +178,15 @@ def baseline_search(df, conc, region):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/data_580.csv')
+    df = pd.read_csv('data/phos_data_580.csv')
     names = pd.read_csv('data/data_580_names.csv')
     conc = pd.read_csv('data/phos_data_580_concentrations_GSSG.csv')
 
-    for i in range(len(df)):
-        plt.plot(df.iloc[i])
-        plt.title(str(names.iloc[i]))
-        plt.show()
-
-    exit()
 
 
     df = put_together_preprocess_search(df, conc, '580')
     print(df)
-    #df.to_csv('data/phos_prepro_580.csv', index=False)
+    df.to_csv('data/phos_prepro_580.csv', index=False)
 
     # VISAULLY CHECK BASELINE REMOVAL
     # LOOKS WEIRD!

@@ -220,6 +220,23 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
 
     return None
 
+def correlated_points_on_normal_spec(spec, corr_points):
+    # Plot the 1D vector
+    plt.plot(spec, linestyle='-', color='b', label='1D Vector')
+
+    # Highlight specific points
+    plt.scatter(corr_points, [spec[i] for i in corr_points], color='r', label='Highlighted Points')
+
+    # Add labels and legend
+    plt.xlabel('Index')
+    plt.ylabel('Values')
+    plt.legend()
+
+    # Show the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
     data = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')

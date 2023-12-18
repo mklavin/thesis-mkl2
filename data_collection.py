@@ -238,10 +238,12 @@ def get_concentration_BSA(absp, pathlength):
 
 if __name__ == '__main__':
     corr = pd.read_csv('data/corr_anal_580.csv')
-    data = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    data = pd.read_csv('data/data_580.csv')
     data1 = pd.read_csv('data/separate_by_sol_580.csv')
 
     x = sort_usingsol_index(data1, data, 'phos')
+
+    x.to_csv('data/phos_data_580.csv', index=False)
 
 
 

@@ -179,9 +179,6 @@ if __name__ == '__main__':
 
     df = scale_rows_to_max(df, '580')
 
-    normalize(df)
-
-    exit()
 
 
 

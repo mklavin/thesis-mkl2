@@ -122,16 +122,48 @@ def new_trainingandtestsplit(x, y, names, split):
 
     return trainingx, testingx, trainingy, testingy
 
+def evaluate_fake_data_withmodels(x, y, fake_x, fake_y):
+    # models:
+    RF = RandomForestRegressor()
+    SVM = svm.SVR()
+    GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
+    MLP = MLPRegressor(random_state=1, hidden_layer_sizes=(100, ), solver='lbfgs', max_iter=5000)
+    KR = KernelRidge()
+    KNN = KNeighborsRegressor()
+    LR = LinearRegression()
+    #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
+    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [RF]
+
+    results = []
+    for j in models:
+        model = j
+        i = 0
+        listy = []
+        while i < 8:
+            model.fit(fake_x, fake_y)
+            y_pred = model.predict(x)
+            y_pred = np.maximum(y_pred, 0)
+            mae = mean_absolute_error(y, y_pred)
+            listy.append(mae)
+            i += 1
+        # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
+        results.append([j,'MAE:', np.average(listy)])
+    print(results)
+    return None
+
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_610.csv')
-    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    x1 = pd.read_csv('data/phos_prepro_580.csv')
+    y1 = pd.read_csv('data/phos_data_580_concentrations.csv')
     names = pd.read_csv('data/data_610_names.csv')
+    fake_x = pd.read_csv('data/fake_data/fake_phos_data_580.csv')
+    fake_y = pd.read_csv('data/fake_data/fake_phos_data_580_concs.csv')
 
-    evaluate_withmodels(x1, y1, names, .80)
+    evaluate_fake_data_withmodels(x1, y1, fake_x, fake_y)
 
 
-    # LBFGS solver works best for 610 region and SGD solver works best for 580 region
+    # MLP's LBFGS solver works best for 610 region and MLP's SGD solver works best for 580 region
 
 
 
