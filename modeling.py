@@ -48,7 +48,6 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
-    models = [MLP]
 
     badspec = []
     results = []
@@ -133,7 +132,6 @@ def evaluate_fake_data_withmodels(x, y, fake_x, fake_y):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
-    models = [RF]
 
     results = []
     for j in models:
