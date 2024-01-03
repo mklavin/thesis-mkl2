@@ -78,5 +78,7 @@ if __name__ == '__main__':
     plt.plot(newdata.iloc[0])
     plt.show()
 
+    # idea: add noise, show effect of noise on model outcome
+
 
 
