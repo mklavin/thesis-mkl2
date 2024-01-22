@@ -39,7 +39,7 @@ def PCA1(data, n):
     ratio = pca.explained_variance_ratio_
     pca_components = pca.transform(data)
     pca_Df = pd.DataFrame(data=pca_components, columns=columns_)
-    return pca_Df, ratio
+    return pca_Df, sum(ratio)
 
 def fast_ICA(data, n):
     model = FastICA(n_components= n, whiten='unit-variance')
@@ -171,13 +171,15 @@ def remove_baseline(spectra, baseline_func, order=None):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/new_data_580.csv')
+    df = pd.read_csv('data/new_data_prepro_580.csv')
     conc = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
 
-    df = remove_baseline(df, pybaselines.spline.irsqr)
+    df, ratio = PCA1(df, 5)
 
-    df = scale_rows_to_max(df, '580')
+    df.to_csv('data/pca_data/new_data_580_prepro_5com.csv', index=False)
+
+
 
 
 

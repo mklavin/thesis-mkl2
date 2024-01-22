@@ -184,10 +184,10 @@ if __name__ == '__main__':
     # df = put_together_preprocess_search(df, conc, '610')
     # df.to_csv('data/updated_12_25_prepro_610.csv', index=False)
 
-    df = pd.read_csv('data/updated_12_25_data_610.csv')
-    conc = pd.read_csv('data/updated_12_25_data_610_concentrations_GSH.csv')
+    df = pd.read_csv('data/new_data_580.csv')
+    conc = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
 
-    df = put_together_preprocess_search(df, conc, '610')
-    #df.to_csv('data/updated_12_25_prepro_610.csv', index=False)
+    df = put_together_preprocess_search(df, conc, '580')
+    df.to_csv('data/new_data_prepro_580.csv', index=False)
 
 

@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.model_selection import GridSearchCV
 
 def find_data_onbadspec(listy, x, y, names):
     """
@@ -47,7 +48,7 @@ def evaluate_withmodels(x, y, names, n):
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    models = [KR, SVM, RF, GBRT, MLP, KNN, LR]
+    models = [SVM]
 
     badspec = []
     results = []
@@ -55,7 +56,7 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 8:
+        while i < 4:
             x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
@@ -150,15 +151,42 @@ def evaluate_fake_data_withmodels(x, y, fake_x, fake_y):
     print(results)
     return None
 
+def tune_param(x_train, y_train):
+    # Define the SVR model
+    svr = svm.SVR()
+
+    # Define the parameter grid to search
+    param_grid = {
+        'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+        'C': [0.1, 1, 10],
+        'gamma': ['scale', 'auto']
+    }
+
+    # Create GridSearchCV
+    grid_search = GridSearchCV(svr, param_grid, cv=3, scoring='neg_mean_squared_error', n_jobs=-1)
+
+    # Fit the model to the training data
+    grid_search.fit(x_train, y_train)
+
+    # Print the best parameters and best score
+    print("Best Parameters: ", grid_search.best_params_)
+    print("Best Score: ", grid_search.best_score_)
+
+    return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/phos_prepro_580.csv')
-    y1 = pd.read_csv('data/phos_data_580_concentrations.csv')
-    names = pd.read_csv('data/data_610_names.csv')
-    fake_x = pd.read_csv('data/fake_data/fake_phos_data_580.csv')
-    fake_y = pd.read_csv('data/fake_data/fake_phos_data_580_concs.csv')
+    x1 = pd.read_csv('data/pca_data/new_data_580_prepro_5com.csv')
+    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
 
-    evaluate_fake_data_withmodels(x1, y1, fake_x, fake_y)
+    tune_param(x1, y1)
+
+    exit()
+    x1 = pd.read_csv('data/pca_data/new_data_580_prepro_5com.csv')
+    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/new_data_580_names.csv')
+
+
+    evaluate_withmodels(x1, y1, names, .85)
 
 
     # MLP's LBFGS solver works best for 610 region and MLP's SGD solver works best for 580 region
