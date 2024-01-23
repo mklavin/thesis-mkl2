@@ -49,7 +49,6 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [RF, SVM, GBRT, MLP, KR, KNN, LR]
-    models = [SVM]
 
     badspec = []
     results = []
@@ -176,18 +175,11 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_580.csv')
-    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    x1 = pd.read_csv('data/updated_12_25_data_prepro_610.csv')
+    y1 = pd.read_csv('data/updated_12_25_data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/updated_12_25_data_610_names.csv')
 
-
-    x1 = pd.read_csv('data/new_data_prepro_580.csv')
-    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/new_data_610_names.csv')
-
-    # evaluate_withmodels(pd.DataFrame(x1['499']), y1, names, .85)
-    plt.plot(x1.iloc[10])
-
-    plt.show()
+    evaluate_withmodels(x1, y1, names, .85)
     exit()
 
     df = pd.concat([x1, y1], axis=1)
