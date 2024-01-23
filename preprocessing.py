@@ -171,13 +171,13 @@ def remove_baseline(spectra, baseline_func, order=None):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/new_data_prepro_580.csv')
+    df = pd.read_csv('data/new_data_prepro_610.csv')
     conc = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
 
-    df, ratio = PCA1(df, 5)
+    df, ratio = PCA1(df, 15)
 
-    df.to_csv('data/pca_data/new_data_580_prepro_5com.csv', index=False)
+    df.to_csv('data/pca_data/new_data_610_prepro_15com.csv', index=False)
 
 
 

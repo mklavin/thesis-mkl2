@@ -235,8 +235,17 @@ def get_concentration_BSA(absp, pathlength):
     print('concentration of BSA:', x, 'mM')
     return None
 
+def remove_pixel(df):
+    df = df.drop(columns=['563'], axis=1)
+    df.to_csv('data/new_data_610.csv', index=False)
+    return None
 
 if __name__ == '__main__':
+    test = pd.read_csv('data/new_data_610.csv')
+    remove_pixel(test)
+    exit()
+
+
     data_580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
     data_610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
     data1 = pd.read_csv('data/separate_by_sol_580.csv')

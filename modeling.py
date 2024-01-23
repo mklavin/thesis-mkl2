@@ -35,19 +35,20 @@ def find_data_onbadspec(listy, x, y, names):
     return None
 
 def evaluate_withmodels(x, y, names, n):
-    # x = x.drop([88])
-    # y = y.drop([88])
-    # names = names.drop([88])
+    # x = x.drop([10])
+    # y = y.drop([10])
+    # names = names.drop([10])
 
     # models:
     RF = RandomForestRegressor()
-    SVM = svm.SVR()
+    SVM = svm.SVR(kernel='poly')
     GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
     MLP = MLPRegressor(random_state=1, hidden_layer_sizes=(100, ), solver='lbfgs', max_iter=5000)
     KR = KernelRidge()
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
+    models = [RF, SVM, GBRT, MLP, KR, KNN, LR]
     models = [SVM]
 
     badspec = []
@@ -65,10 +66,10 @@ def evaluate_withmodels(x, y, names, n):
 
             for i in range(len(y_pred)):
                 try:
-                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 5:
+                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 1:
                         badspec.append(list(x_test.iloc[i]))
                 except TypeError:
-                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 5:
+                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 1:
                         badspec.append(list(x_test.iloc[i]))
 
             mae = mean_absolute_error(y_test, y_pred)
@@ -175,21 +176,46 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/pca_data/new_data_580_prepro_5com.csv')
-    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
+    x1 = pd.read_csv('data/prepro_580.csv')
+    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    tune_param(x1, y1)
+
+    x1 = pd.read_csv('data/new_data_prepro_580.csv')
+    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/new_data_610_names.csv')
+
+    # evaluate_withmodels(pd.DataFrame(x1['499']), y1, names, .85)
+    plt.plot(x1.iloc[10])
+
+    plt.show()
+    exit()
+
+    df = pd.concat([x1, y1], axis=1)
+    print(df)
+    df = pd.DataFrame(np.corrcoef(df.T))
+    print(df)
+    sorted_df = df.sort_values(by=1339, ascending=False)
+    print(sorted_df[1339])
+    exit()
+
+    y_values = np.array(y1)
+    # Perform the division
+    normalized_y = y_values / np.max(y_values)
+
+    x_values = np.array(x1['150'])
+    # Perform the division
+    normalized_x = x_values / np.max(x_values)
+
 
     exit()
-    x1 = pd.read_csv('data/pca_data/new_data_580_prepro_5com.csv')
-    y1 = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/new_data_580_names.csv')
 
-
-    evaluate_withmodels(x1, y1, names, .85)
+    evaluate_withmodels(x1, y1, names, .75)
 
 
     # MLP's LBFGS solver works best for 610 region and MLP's SGD solver works best for 580 region
+    # SVM linear solver works best for 580 region
+
+    # why is the correlation high for random points...
 
 
 

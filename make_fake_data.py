@@ -68,6 +68,10 @@ def update_points(df, bestfit):
     concs = pd.DataFrame(concs, columns=['concs'])
     return updated_df.T, concs # returns new spectra and corresponding concentrations
 
+def make_data_gaussian():
+
+    return None
+
 if __name__ == '__main__':
     data = pd.read_csv('data/phos_prepro_580.csv')
     conc = pd.read_csv('data/phos_data_580_concentrations.csv')
