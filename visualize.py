@@ -237,10 +237,73 @@ def correlated_points_on_normal_spec(spec, corr_points):
 
     return None
 
+def plot_preprocessing_results():
+    # Data
+    strategies = ['Strategy 1', 'Strategy 2', 'Strategy 3', 'Strategy 4', 'Strategy 5', 'Strategy 6']
+    values = [0.6372749936062636, 0.1638503570412616, 0.6201239413631636, 0.6585936251828202, 0.843863308666424, 0.49164083407327897]
+
+    # Create a scatter plot with custom styling
+    plt.figure(figsize=(8, 6))  # Set the figure size
+
+    # Customize scatter plot appearance
+    plt.scatter(strategies, values, color='skyblue', s=100, edgecolors='black', alpha=0.7, marker='o')
+
+    # Set labels and title with increased font size
+    plt.ylabel('Covariance', fontsize=14)
+    plt.title('Effect of Strategy Choice on Covariance', fontsize=16)
+
+    # Tilt x-axis labels vertically
+    plt.xticks(rotation='vertical')
+
+    # Save figure
+    plt.savefig('plots/strategy_comparison.png', dpi=1200, bbox_inches='tight')
+
+    # Show the plot
+    plt.show()
+
+    return None
+
+def plot_preprocessing_beforeandafte(before, after):
+    # Customize plot styles for better readability
+    plt.rc('font', family='serif', size=12)
+    plt.rc('xtick', labelsize='small')
+    plt.rc('ytick', labelsize='small')
+
+    # Create a figure and add subplots in a 2x1 grid
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))  # Adjust the figure size to your preference
+
+    # Plot the data and the polynomial fit in the upper subplot
+    ax1.plot(np.arange(0, len(before.iloc[0])), before.iloc[0], color='b', linestyle='solid', label='GSSG in Phosphate')
+    ax1.plot(np.arange(0, len(before.iloc[0])), before.iloc[4], color='r', linestyle='solid', label='GSSG in BSA')
+    ax1.plot(np.arange(0, len(before.iloc[0])), before.iloc[1], color='g', linestyle='solid', label='GSSG in PEG')
+    ax1.set_xlabel('Raman Shift (cm⁻¹)')
+    ax1.set_ylabel('Intensity')
+    ax1.legend()  # Add a legend to the upper subplot
+
+    # Plot the residual (data - fit) in the lower subplot
+    ax2.plot(np.arange(0, len(after.iloc[0])), after.iloc[0], color='b', linestyle='solid', label='GSSG in Phosphate')
+    ax2.plot(np.arange(0, len(after.iloc[0])), after.iloc[4], color='r', linestyle='solid', label='GSSG in BSA')
+    ax2.plot(np.arange(0, len(after.iloc[0])), after.iloc[1], color='g', linestyle='solid', label='GSSG in PEG')
+    ax2.set_xlabel('Raman Shift (cm⁻¹)')
+    ax2.set_ylabel('Intensity')
+    ax2.legend()  # Add a legend to the lower subplot
+
+    # Save the plot to a file for inclusion in your paper
+    plt.savefig('preprocessing_comparison.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+
+    # Display the plot (optional)
+    plt.show()
+
+    return None  # This line is not needed
+
 if __name__ == '__main__':
-    data = pd.read_csv('data/prepro_580.csv')
+    data = pd.read_csv('data/data_580.csv')
+    data2 = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+
+    plot_preprocessing_beforeandafte(data, data2)
+    exit()
 
     # PCA1 vs PCA2
     data, ratio = PCA1(data, 2)
