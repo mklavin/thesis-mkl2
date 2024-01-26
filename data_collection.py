@@ -145,7 +145,7 @@ def gather_data():
     # loops through all of the raw data files in data and converts to one csv file
     # also makes files with the name of data and labels
 
-    folder_path = 'data/12_20_2023_newdata'  # filepath to folder of data
+    folder_path = 'data/150 gg data'  # filepath to folder of data
     n = 1340  # length of spectra
     columns = [i for i in range(1, n)]  # create list of same length
     data = pd.DataFrame(columns=columns)  # empty dataframe with columns for each value
@@ -167,10 +167,10 @@ def gather_data():
     contains_580 = data[data['names'].str.contains('580')]
     contains_610 = data[data['names'].str.contains('610')]
 
-    #contains_580 = contains_580.drop(columns=['names', 'conc_GSSG'])
+    contains_580 = contains_580.drop(columns=['conc_GSH', 563])
     #contains_610 = contains_610.drop(columns=['names', 'conc_GSSG'])
 
-    return contains_580, contains_610
+    return contains_580#, contains_610
 
 def drop_missingvals(spectra):
     # raman spectrometer is missing a pixel at the 563rd position
@@ -241,10 +241,11 @@ def remove_pixel(df):
     return None
 
 if __name__ == '__main__':
-    test = pd.read_csv('data/new_data_610.csv')
-    remove_pixel(test)
-    exit()
+    test = pd.read_csv('data/150 gg data/150ggdata.csv')
+    for i in range(5):
 
+    exit()
+    # 519-841
 
     data_580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
     data_610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
