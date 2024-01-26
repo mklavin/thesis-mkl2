@@ -69,7 +69,7 @@ def plot_and_cluster_kmeans(dataframe):
 def make_baselineplot(x, y):
     # Fit a polynomial to the data
     polyfit_order = 7
-    row_polyfit = pybaselines.spline.irsqr(y)[0]
+    row_polyfit = pybaselines.morphological.jbcd(y)[0]
 
     # Customize plot styles for better readability
     plt.rc('font', family='serif', size=12)
@@ -81,7 +81,7 @@ def make_baselineplot(x, y):
 
     # Plot the data and the polynomial fit in the upper subplot
     ax1.plot(x, y, color='b', linestyle='solid', label='Data')
-    ax1.plot(x, row_polyfit, color='r', linestyle='solid', label='Iterative Reweighted Spline Quantile Regression Fit')
+    ax1.plot(x, row_polyfit, color='r', linestyle='solid', label='Joint Baseline Correction and Denoising')
     ax1.set_xlabel('Raman Shift (cm⁻¹)')
     ax1.set_ylabel('Intensity')
     ax1.legend()  # Add a legend to the upper subplot
@@ -92,6 +92,14 @@ def make_baselineplot(x, y):
     ax2.set_xlabel('Raman Shift (cm⁻¹)')
     ax2.set_ylabel('Intensity')
     ax2.legend()  # Add a legend to the lower subplot
+
+    # Set x-axis ticks to display integers for both subplots
+    x_ticks_positions = np.arange(0, 1340, 223.3)
+    x_ticks_labels = np.arange(400, 1740, 200)
+    ax1.set_xticks(x_ticks_positions)
+    ax1.set_xticklabels(x_ticks_labels, fontsize=12)
+    ax2.set_xticks(x_ticks_positions)
+    ax2.set_xticklabels(x_ticks_labels, fontsize=12)
 
     # Save the plot to a file for inclusion in your paper
     plt.savefig('baseline_removal_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
@@ -169,14 +177,14 @@ def plot_predicted_versus_test(y_pred, y_test):
     # Adding labels and title
     plt.xlabel('Predicted Values')
     plt.ylabel('Actual Values')
-    plt.title('Actual vs. Predicted Values of GSH (mM)')
+    plt.title('Actual vs. Predicted Values of GSSG (mM)')
 
     # Displaying the legend
     plt.legend()
 
     # Adding grid for better readability
     plt.grid(True)
-    plt.savefig('predvsactual_GSH.png')
+    plt.savefig('plots/phosphate_model.png')
 
     # Show the plot
     plt.show()
@@ -188,6 +196,9 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     # Define colors for each line
     colors = ['blue', 'green', 'red']
 
+    x = np.arange(400, len(BSA)+400)
+    print(x)
+
     # Plot each spectrum with a specific color
     plt.plot(BSA, label='BSA', color=colors[0])
     plt.plot(PEG, label='PEG', color=colors[1])
@@ -196,17 +207,17 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     plt.gcf().set_size_inches(10, 5)
 
     # Add labels and title
-    plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12, fontfamily= 'serif')
-    plt.ylabel('Intensity', fontsize = 12, fontfamily= 'serif')
-    plt.title('Solvent Comparison of Raman Spectra', fontsize = 12, fontfamily= 'serif')
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12)
+    plt.ylabel('Intensity', fontsize = 12)
+    plt.title('Solvent Comparison of Raman Spectra', fontsize = 12)
 
     # Customize ticks and labels
-    plt.xticks(fontsize=12, fontfamily= 'serif')  # X-axis tick font size
-    plt.yticks(fontsize=12, fontfamily= 'serif')  # Y-axis tick font size
+    plt.xticks(fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
 
     # Set x-axis ticks to display integers
-    x_ticks_positions = np.arange(0, 1500, 143.181818)
-    x_ticks_labels = np.arange(400, 1500, 100) #[str(int(pos)) for pos in x_ticks_positions]
+    x_ticks_positions = np.arange(0, 1340, 223.3)
+    x_ticks_labels = np.arange(400, 1740, 200) #[str(int(pos)) for pos in x_ticks_positions]
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
@@ -262,7 +273,6 @@ def plot_preprocessing_results():
     plt.show()
 
     return None
-
 def plot_preprocessing_beforeandafte(before, after):
     # Customize plot styles for better readability
     plt.rc('font', family='serif', size=12)
@@ -288,13 +298,118 @@ def plot_preprocessing_beforeandafte(before, after):
     ax2.set_ylabel('Intensity')
     ax2.legend()  # Add a legend to the lower subplot
 
+    # Set x-axis ticks to display integers for both subplots
+    x_ticks_positions = np.arange(0, 1340, 223.3)
+    x_ticks_labels = np.arange(400, 1740, 200)
+    ax1.set_xticks(x_ticks_positions)
+    ax1.set_xticklabels(x_ticks_labels, fontsize=12)
+    ax2.set_xticks(x_ticks_positions)
+    ax2.set_xticklabels(x_ticks_labels, fontsize=12)
+
     # Save the plot to a file for inclusion in your paper
     plt.savefig('preprocessing_comparison.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
 
     # Display the plot (optional)
     plt.show()
 
-    return None  # This line is not needed
+    return None
+
+def plot_just_solvent(data):
+    # Customize plot styles for better readability
+    plt.rc('font', family='serif', size=12)
+    plt.rc('xtick', labelsize='small')
+    plt.rc('ytick', labelsize='small')
+    plt.xlabel('Raman Shift (cm⁻¹)')
+    plt.ylabel('Intensity')
+
+    x_values = np.arange(0, len(data.iloc[33]))
+    y_values = data.drop(columns=[str(i) for i in range(134, 163)], axis=1)
+    x_values = np.concatenate((x_values[:133], x_values[162:]))
+
+    # Plot the entire spectrum in blue
+    plt.plot(x_values, y_values.iloc[33], color='blue', label='BSA Signal')
+
+    # Show legend
+    plt.legend()
+    # Save the plot to a file for inclusion in your paper
+    plt.savefig('plots/justsolvent.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+
+
+    plt.show()
+
+    return None
+
+
+def plot_just_glutathione(data):
+    # Customize plot styles for better readability
+    plt.rc('font', family='serif', size=12)
+    plt.rc('xtick', labelsize='small')
+    plt.rc('ytick', labelsize='small')
+    plt.xlabel('Raman Shift (cm⁻¹)')
+    plt.ylabel('Intensity')
+
+    # Use the length of y_values_excluded as the length for x_values
+    x_values = np.arange(134, 166)
+
+    # Define the columns to exclude (134 to 162)
+    excluded_columns = [str(i) for i in range(134, 166)]
+
+    # Create y_values for the excluded region
+    y_values_excluded = data[excluded_columns].iloc[33]
+
+    # Plot the excluded region in red
+    plt.plot(x_values, y_values_excluded, color='red')
+
+    # first part
+    y1 = [193464] * 34
+    x1 = np.arange(100, 134)
+    plt.plot(x1, y1, color='red')
+
+    # third part
+    y3 = [195635] * 34
+    x3 = np.arange(166, 200)
+    plt.plot(x3, y3, color='red')
+
+    plt.ylim(180000, 220000)
+
+    # Show legend
+    plt.legend()
+
+    # Save the plot to a file for inclusion in your paper
+    plt.savefig('plots/justglutathione.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+
+
+    plt.show()
+
+    return None
+
+def plot_spectra_simple(data):
+    # Customize plot styles for better readability
+    plt.rc('font', family='serif', size=12)
+    plt.rc('xtick', labelsize='small')
+    plt.rc('ytick', labelsize='small')
+    plt.xlabel('Raman Shift (cm⁻¹)')
+    plt.ylabel('Intensity')
+
+    x_values = np.arange(0, len(data))
+    y_values = data
+
+    # Plot the entire spectrum in blue
+    plt.plot(x_values, y_values, color='blue', label='BSA Signal')
+
+    # Highlight the specified range in red
+    plt.plot(x_values[140:161], y_values[140:161], color='red', label='Disulfide Signal')
+
+    # Show legend
+    plt.legend()
+
+    # Save the plot to a file for inclusion in your paper
+    plt.savefig('plots/bothcomponents.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+
+
+    plt.show()
+
+    return None
 
 if __name__ == '__main__':
     data = pd.read_csv('data/data_580.csv')
@@ -302,7 +417,7 @@ if __name__ == '__main__':
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    plot_preprocessing_beforeandafte(data, data2)
+    make_baselineplot(np.arange(0, len(data.iloc[4])), data.iloc[3])
     exit()
 
     # PCA1 vs PCA2

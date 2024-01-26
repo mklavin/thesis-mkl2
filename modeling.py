@@ -41,7 +41,7 @@ def evaluate_withmodels(x, y, names, n):
 
     # models:
     RF = RandomForestRegressor()
-    SVM = svm.SVR(kernel='poly')
+    SVM = svm.SVR(kernel='linear')
     GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
     MLP = MLPRegressor(random_state=1, hidden_layer_sizes=(100, ), solver='lbfgs', max_iter=5000)
     KR = KernelRidge()
@@ -49,6 +49,7 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [RF, SVM, GBRT, MLP, KR, KNN, LR]
+    models = [MLP]
 
     badspec = []
     results = []
@@ -77,7 +78,7 @@ def evaluate_withmodels(x, y, names, n):
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'MAE:', np.average(listy)])
     print(results)
-    return find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
+    return list(y_test['conc_GSSG']), y_pred #find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
 
 
 def new_trainingandtestsplit(x, y, names, split):
@@ -121,6 +122,49 @@ def new_trainingandtestsplit(x, y, names, split):
     trainingy = pd.concat(trainingy, ignore_index=True, axis=1).T
 
     return trainingx, testingx, trainingy, testingy
+#
+
+def phosphate_training_set(x, y, names, split):
+    # Makes a training and test split that has an even amount of PEG, BSA, and phos solvent samples
+    # Sorts them by names
+
+    def categorize_row(row):
+        if 'BSA' in row:
+            return 1
+        elif 'PEG' in row:
+            return 2
+        else:
+            return 3
+
+    # Apply categorization to the 'names' column
+    names['categories'] = names.applymap(categorize_row)['names']
+
+    # Calculate the number of samples for each category based on the split ratio
+    category_counts = names['categories'].value_counts()
+    ones_count = int(category_counts[1] * split)
+    twos_count = int(category_counts[2] * split)
+    threes_count = int(category_counts[3] * split)
+
+    # Filter samples for each category
+    ones_samples = names[names['categories'] == 1].head(ones_count)
+    twos_samples = names[names['categories'] == 2].head(twos_count)
+    threes_samples = names[names['categories'] == 3].head(threes_count)
+
+    # Combine samples for training and testing sets
+    training_names = pd.concat([ones_samples, twos_samples, threes_samples])
+    testing_names = names.drop(training_names.index)
+
+    # Use the indices from names DataFrame to filter the corresponding rows in x and y
+    training_indices = training_names.index
+    testing_indices = testing_names.index
+
+    training_x = x.loc[training_indices]
+    training_y = y.loc[training_indices]
+
+    testing_x = x.loc[testing_indices]
+    testing_y = y.loc[testing_indices]
+
+    return training_x, testing_x, training_y, testing_y
 
 def evaluate_fake_data_withmodels(x, y, fake_x, fake_y):
     # models:
@@ -175,11 +219,11 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/updated_12_25_data_prepro_610.csv')
-    y1 = pd.read_csv('data/updated_12_25_data_610_concentrations_GSH.csv')
-    names = pd.read_csv('data/updated_12_25_data_610_names.csv')
+    x1 = pd.read_csv('data/prepro_610.csv')
+    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
+    names = pd.read_csv('data/data_610_names.csv')
 
-    evaluate_withmodels(x1, y1, names, .85)
+    print(evaluate_withmodels(x1, y1, names, .85))
     exit()
 
     df = pd.concat([x1, y1], axis=1)
@@ -207,7 +251,6 @@ if __name__ == '__main__':
     # MLP's LBFGS solver works best for 610 region and MLP's SGD solver works best for 580 region
     # SVM linear solver works best for 580 region
 
-    # why is the correlation high for random points...
 
 
 
