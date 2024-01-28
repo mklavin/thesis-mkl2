@@ -191,7 +191,6 @@ def plot_predicted_versus_test(y_pred, y_test):
 
     return None
 
-
 def make_solvent_comparison_plot(BSA, PEG, phos):
     # Define colors for each line
     colors = ['blue', 'green', 'red']
@@ -339,7 +338,6 @@ def plot_just_solvent(data):
 
     return None
 
-
 def plot_just_glutathione(data):
     # Customize plot styles for better readability
     plt.rc('font', family='serif', size=12)
@@ -411,13 +409,52 @@ def plot_spectra_simple(data):
 
     return None
 
+def simple_plot(df):
+    # Define colors for each line
+    colors = ['blue', 'green', 'red']
+
+    x = np.arange(400, 2800, 10.29)
+
+
+    # Plot each spectrum with a specific color
+    plt.plot(np.arange(400, 2800, 7.73), df, label='Water', color=colors[0])
+
+    print(len(df))
+
+    plt.gcf().set_size_inches(10, 5)
+
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12)
+    plt.ylabel('Intensity', fontsize = 12)
+    plt.title('Raman Spectra Components', fontsize = 12)
+
+    # Customize ticks and labels
+    plt.xticks(fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    # Set x-axis ticks to display integers
+    x_ticks_positions = np.arange(400, 2800, 300)
+    x_ticks_labels = np.arange(400, 2800, 300) #[str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    # Add legend
+    plt.legend()
+
+    # Save figure
+    plt.savefig('plots/water.png', dpi=1200, bbox_inches='tight')
+
+    # Show the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
-    data = pd.read_csv('data/data_580.csv')
+    data = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
     data2 = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    make_baselineplot(np.arange(0, len(data.iloc[4])), data.iloc[3])
+    simple_plot(data.iloc[4])
     exit()
 
     # PCA1 vs PCA2

@@ -241,9 +241,16 @@ def remove_pixel(df):
     return None
 
 if __name__ == '__main__':
-    test = pd.read_csv('data/150 gg data/150ggdata.csv')
-    for i in range(5):
-
+    df = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
+    vals = list(df['685'])
+    for i in range(len(vals)):
+        df.iloc[i] = df.iloc[i]-(vals[i]-95719)
+    plt.plot(df.iloc[0])
+    plt.plot(df.iloc[1])
+    plt.plot(df.iloc[2])
+    plt.plot(df.iloc[3])
+    plt.plot(df.iloc[4])
+    plt.show()
     exit()
     # 519-841
 
