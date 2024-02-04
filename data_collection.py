@@ -241,6 +241,9 @@ def remove_pixel(df):
     return None
 
 if __name__ == '__main__':
+    print(get_concentration_BSA(.53,.02))
+    exit()
+
     df = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
     vals = list(df['685'])
     for i in range(len(vals)):

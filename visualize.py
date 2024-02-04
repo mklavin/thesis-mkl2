@@ -273,10 +273,10 @@ def plot_preprocessing_results():
 
     return None
 def plot_preprocessing_beforeandafte(before, after):
-    # Customize plot styles for better readability
-    plt.rc('font', family='serif', size=12)
-    plt.rc('xtick', labelsize='small')
-    plt.rc('ytick', labelsize='small')
+    # # Customize plot styles for better readability
+    # plt.rc('font', family='serif', size=12)
+    # plt.rc('xtick', labelsize='small')
+    # plt.rc('ytick', labelsize='small')
 
     # Create a figure and add subplots in a 2x1 grid
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))  # Adjust the figure size to your preference
@@ -417,16 +417,14 @@ def simple_plot(df):
 
 
     # Plot each spectrum with a specific color
-    plt.plot(np.arange(400, 2800, 7.73), df, label='Water', color=colors[0])
+    plt.plot(np.arange(400, 2800, 7.73), df, color='0')
 
-    print(len(df))
-
-    plt.gcf().set_size_inches(10, 5)
+    plt.gcf().set_size_inches(8, 5)
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12)
     plt.ylabel('Intensity', fontsize = 12)
-    plt.title('Raman Spectra Components', fontsize = 12)
+    plt.title('Glutathione in PEG', fontsize = 12)
 
     # Customize ticks and labels
     plt.xticks(fontsize=12)  # X-axis tick font size
@@ -438,10 +436,10 @@ def simple_plot(df):
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
-    plt.legend()
+    # plt.legend()
 
     # Save figure
-    plt.savefig('plots/water.png', dpi=1200, bbox_inches='tight')
+    plt.savefig('plots/red_and_ox_in_PEG.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
@@ -449,12 +447,12 @@ def simple_plot(df):
     return None
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
+    data = pd.read_csv('data/data_580.csv')
     data2 = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_580.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    simple_plot(data.iloc[4])
+    plot_preprocessing_beforeandafte(data, data2)
     exit()
 
     # PCA1 vs PCA2
