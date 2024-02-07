@@ -32,12 +32,14 @@ def separate_by_sol_andplot(data, indices):
     return output.T
 
 def plot_and_cluster_DBSCAN(dataframe):
+    dataframe, ratio = PCA1(dataframe, 2)
+    print(ratio)
     clustering = DBSCAN(eps=60).fit(dataframe)
 
     # uncover to make scatterplot
-    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.3, palette='gist_ncar',
+    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.1, palette='gist_ncar',
                     hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
-                    hue=clustering.labels_).set_title(f"Neighbors= {45}, eps=5")
+                    hue=clustering.labels_).set_title(f"Neighbors= {5}, eps=5")
     sns.set(font_scale=2)
     plt.tick_params(axis='both', which='major', labelsize=14)
     plt.xlabel('UMAP1', fontsize=16)
@@ -439,7 +441,7 @@ def simple_plot(df):
     # plt.legend()
 
     # Save figure
-    plt.savefig('plots/red_and_ox_in_PEG.png', dpi=1200, bbox_inches='tight')
+    plt.savefig('plots/red_and_ox_in_PEG.png', dpi=1200, bbox_inches='tight', transparent=True)
 
     # Show the plot
     plt.show()
@@ -447,16 +449,16 @@ def simple_plot(df):
     return None
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/data_580.csv')
+    data = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
     data2 = pd.read_csv('data/prepro_580.csv')
-    soldata = pd.read_csv('data/separate_by_sol_580.csv')
+    soldata = pd.read_csv('data/separate_by_sol_610.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    plot_preprocessing_beforeandafte(data, data2)
+    simple_plot(data.iloc[0])
     exit()
-
     # PCA1 vs PCA2
-    data, ratio = PCA1(data, 2)
+    data, ratio = PCA1(data2, 5)
+    print(ratio)
 
     bsadf = separate_by_sol_andplot(data, soldata['BSA'])
     pegdf = separate_by_sol_andplot(data, soldata['PEG'])

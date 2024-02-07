@@ -41,7 +41,7 @@ def evaluate_withmodels(x, y, names, n):
 
     # models:
     RF = RandomForestRegressor()
-    SVM = svm.SVR(kernel='linear')
+    SVM = svm.SVR()
     GBRT = GradientBoostingRegressor(alpha=.001, n_estimators=50000)
     MLP = MLPRegressor(random_state=1, hidden_layer_sizes=(100, ), solver='lbfgs', max_iter=5000)
     KR = KernelRidge()
@@ -49,7 +49,7 @@ def evaluate_withmodels(x, y, names, n):
     LR = LinearRegression()
     #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
     models = [RF, SVM, GBRT, MLP, KR, KNN, LR]
-    models = [MLP]
+    models = [MLP, SVM]
 
     badspec = []
     results = []
@@ -57,7 +57,7 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 4:
+        while i < 6:
             x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
@@ -78,7 +78,7 @@ def evaluate_withmodels(x, y, names, n):
         # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
         results.append([j,'MAE:', np.average(listy)])
     print(results)
-    return list(y_test['conc_GSSG']), y_pred #find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
+    return y_pred #find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
 
 
 def new_trainingandtestsplit(x, y, names, split):
@@ -219,9 +219,9 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/prepro_610.csv')
-    y1 = pd.read_csv('data/data_610_concentrations_GSH.csv')
-    names = pd.read_csv('data/data_610_names.csv')
+    x1 = pd.read_csv('data/prepro_580.csv')
+    y1 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/data_580_names.csv')
 
     print(evaluate_withmodels(x1, y1, names, .85))
     exit()
