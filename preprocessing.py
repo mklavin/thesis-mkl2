@@ -169,15 +169,42 @@ def remove_baseline(spectra, baseline_func, order=None):
 
     return baselined_spectra
 
+def calc_correlation_matrix(df, conc):
+    # return the correlation matrix of all points
+
+    df = pd.concat([df, conc], axis=1)
+    correlation_matrix = pd.DataFrame(np.corrcoef(df.T))
+
+    return correlation_matrix
+
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/new_data_prepro_610.csv')
-    conc = pd.read_csv('data/new_data_580_concentrations_GSSG.csv')
+    df = pd.read_csv('data/prepro_580.csv')
+    glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
+    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
 
-    df, ratio = PCA1(df, 15)
 
-    df.to_csv('data/pca_data/new_data_610_prepro_15com.csv', index=False)
+    xpoints = []
+    ypoints = []
+
+    for i in range(len(glu)):
+        if glu.iloc[i]['153'] > 0.7:
+            xpoints.append(glu.iloc[i]['point'])
+            point = glu.iloc[i]['point']
+            ypoints.append(df.iloc[3][int(point)])
+
+    # Sort the x-points to ensure they are in ascending order
+    sorted_indices = sorted(range(len(xpoints)), key=lambda k: xpoints[k])
+    xpoints = [xpoints[i] for i in sorted_indices]
+    ypoints = [ypoints[i] for i in sorted_indices]
+
+    plt.plot(df.iloc[3], label='Line Plot')
+    plt.plot(xpoints, ypoints, 'ro', markersize=3, label='Points')
+    plt.legend()
+    plt.show()
+
+
 
 
 

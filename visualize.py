@@ -198,7 +198,6 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     colors = ['blue', 'green', 'red']
 
     x = np.arange(400, len(BSA)+400)
-    print(x)
 
     # Plot each spectrum with a specific color
     plt.plot(BSA, label='BSA', color=colors[0])
@@ -217,8 +216,8 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
     # Set x-axis ticks to display integers
-    x_ticks_positions = np.arange(0, 1340, 223.3)
-    x_ticks_labels = np.arange(400, 1740, 200) #[str(int(pos)) for pos in x_ticks_positions]
+    x_ticks_positions = np.arange(400, 2800, 300)
+    x_ticks_labels = np.arange(400, 2800, 300)  # [str(int(pos)) for pos in x_ticks_positions]
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
@@ -411,7 +410,7 @@ def plot_spectra_simple(data):
 
     return None
 
-def simple_plot(df):
+def simple_plot(df, df1, df2):
     # Define colors for each line
     colors = ['blue', 'green', 'red']
 
@@ -420,6 +419,8 @@ def simple_plot(df):
 
     # Plot each spectrum with a specific color
     plt.plot(np.arange(400, 2800, 7.73), df, color='0')
+    plt.plot(np.arange(400, 2800, 7.73), df1, color='0')
+    plt.plot(np.arange(400, 2800, 7.73), df2, color='0')
 
     plt.gcf().set_size_inches(8, 5)
 
@@ -438,7 +439,46 @@ def simple_plot(df):
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
-    # plt.legend()
+    plt.legend()
+
+    # Save figure
+    #plt.savefig('plots/red_and_ox_in_PEG.png', dpi=1200, bbox_inches='tight', transparent=True)
+
+    # Show the plot
+    plt.show()
+
+    return None
+
+def simple_plot(df, df1, df2, df3):
+    # Define colors for each line
+    colors = ['blue', 'green', 'red', 'purple']
+
+    x = np.arange(400, 2800, 10.29)
+
+    # Plot each spectrum with a specific color and label
+    plt.plot(np.arange(400, 2800, 7.73), df, color=colors[0], label='Water')
+    plt.plot(np.arange(400, 2800, 7.73), df1, color=colors[1], label='Phosphate')
+    plt.plot(np.arange(400, 2800, 7.73), df2, color=colors[2], label='PEG')
+    plt.plot(np.arange(400, 2800, 7.73), df3, color=colors[3], label='Glutathione in PEG')
+
+    plt.gcf().set_size_inches(8, 5)
+
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.title('Spectral Components', fontsize=12)
+
+    # Customize ticks and labels
+    plt.xticks(fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    # Set x-axis ticks to display integers
+    x_ticks_positions = np.arange(400, 2800, 300)
+    x_ticks_labels = np.arange(400, 2800, 300)  # [str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    # Add legend
+    plt.legend()
 
     # Save figure
     plt.savefig('plots/red_and_ox_in_PEG.png', dpi=1200, bbox_inches='tight', transparent=True)
@@ -448,13 +488,33 @@ def simple_plot(df):
 
     return None
 
+def plot_correlated_points(corr, spec):
+    xpoints = []
+    ypoints = []
+
+    for i in range(len(corr)):
+        if corr.iloc[i]['153'] > 0.7:
+            xpoints.append(corr.iloc[i]['point'])
+            point = corr.iloc[i]['point']
+            ypoints.append(corr.iloc[0][int(point)])
+
+    # Sort the x-points to ensure they are in ascending order
+    sorted_indices = sorted(range(len(xpoints)), key=lambda k: xpoints[k])
+    xpoints = [xpoints[i] for i in sorted_indices]
+    ypoints = [ypoints[i] for i in sorted_indices]
+
+    plt.plot(spec.iloc[0], label='Line Plot')
+    plt.plot(xpoints, ypoints, 'ro', markersize=3, label='Points')
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
     data = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
     data2 = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_610.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    simple_plot(data.iloc[0])
+    simple_plot(data.iloc[4], data.iloc[2], data.iloc[3], data.iloc[0])
     exit()
     # PCA1 vs PCA2
     data, ratio = PCA1(data2, 5)
