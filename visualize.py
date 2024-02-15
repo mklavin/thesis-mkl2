@@ -508,13 +508,60 @@ def plot_correlated_points(corr, spec):
     plt.legend()
     plt.show()
 
+def make_glu_peak_comparison_plot(BSA, PEG, phos):
+    # Define colors for each line
+    colors = ['blue', 'green', 'red']
+
+    # Plot each spectrum with a specific color
+    plt.plot(BSA, label='BSA', color=colors[0])
+    plt.plot(PEG, label='PEG', color=colors[1])
+    plt.plot(phos, label='phos', color=colors[2])
+
+    plt.gcf().set_size_inches(10, 5)
+
+    # Set x-axis limits to zoom in on the region from x = 145 to x = 160
+    plt.xlim(135, 175)
+    plt.ylim(-0.1, .5)
+
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.title('90 mM GSSG Peak Comparison', fontsize=12)
+
+    # Customize ticks and labels
+    plt.xticks(fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    # Set x-axis ticks for the zoomed-in region
+    x_ticks_positions = np.arange(135, 176, 2)
+    x_ticks_labels = [str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    plt.grid(True)
+
+    # Add legend
+    plt.legend()
+
+    # Save figure
+    #plt.savefig('plots/50mM_GSSG_peakcomparison.png', dpi=1200, bbox_inches='tight')
+
+    # Show the plot
+    plt.show()
+
+    return None
+
 if __name__ == '__main__':
-    data = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
+    bsa = pd.read_csv('data/bsa_prepro_580.csv')
+    peg = pd.read_csv('data/peg_prepro_580.csv')
+    phos = pd.read_csv('data/phos_prepro_580.csv')
+
+
     data2 = pd.read_csv('data/prepro_580.csv')
     soldata = pd.read_csv('data/separate_by_sol_610.csv')
     conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
 
-    simple_plot(data.iloc[4], data.iloc[2], data.iloc[3], data.iloc[0])
+
+    make_glu_peak_comparison_plot(bsa.iloc[1], peg.iloc[17], phos.iloc[16])
     exit()
     # PCA1 vs PCA2
     data, ratio = PCA1(data2, 5)

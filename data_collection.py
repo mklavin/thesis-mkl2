@@ -241,7 +241,11 @@ def remove_pixel(df):
     return None
 
 if __name__ == '__main__':
-    print(get_concentration_BSA(.53,.02))
+    df = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    df2 = pd.read_csv('data/separate_by_sol_580.csv')
+
+    sort_usingsol_index(df2, df, 'BSA').to_csv('data/bsa_conc_580.csv', index=False)
+
     exit()
 
     df = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
