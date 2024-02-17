@@ -11,14 +11,14 @@ def combine_data():
     daniels580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
     daniels610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
 
-    data580 = pd.read_csv('data/data_580.csv')
-    data610 = pd.read_csv('data/data_610.csv')
+    data580 = pd.read_csv('data/old data 2-16-2024/data_580.csv')
+    data610 = pd.read_csv('data/old data 2-16-2024/data_610.csv')
 
-    conc610 = pd.read_csv('data/data_610_concentrations_GSH.csv')
-    conc580 = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    conc610 = pd.read_csv('data/old data 2-16-2024/data_610_concentrations_GSH.csv')
+    conc580 = pd.read_csv('data/old data 2-16-2024/data_580_concentrations_GSSG.csv')
 
-    names580 = pd.read_csv('data/data_580_names.csv')
-    names610 = pd.read_csv('data/data_610_names.csv')
+    names580 = pd.read_csv('data/old data 2-16-2024/data_580_names.csv')
+    names610 = pd.read_csv('data/old data 2-16-2024/data_610_names.csv')
 
     conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
     conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSSG']])
@@ -26,17 +26,17 @@ def combine_data():
     names610 = pd.concat([names610['names'], daniels610['names']])
     names580 = pd.concat([names580['names'], daniels580['names']])
 
-    conc580.to_csv('data/updated_12_25_data_580_concentrations_GSSG.csv', index=False)
-    conc610.to_csv('data/updated_12_25_data_610_concentrations_GSH.csv', index=False)
-    names580.to_csv('data/updated_12_25_data_580_names.csv', index=False)
-    names610.to_csv('data/updated_12_25_data_610_names.csv', index=False)
+    conc580.to_csv('data/raman_580_concentrations_GSSG.csv', index=False)
+    conc610.to_csv('data/raman_610_concentrations_GSH.csv', index=False)
+    names580.to_csv('data/raman_580_names.csv', index=False)
+    names610.to_csv('data/raman_610_names.csv', index=False)
 
     daniels610 = daniels610.drop(columns=['conc_GSH', 'names', '563'])
     daniels580 = daniels580.drop(columns=['conc_GSSG', 'names', '563'])
     daniels610 = pd.concat([data610, daniels610])
     daniels580 = pd.concat([data580, daniels580])
-    daniels580.to_csv('data/updated_12_25_data_580.csv', index=False)
-    daniels610.to_csv('data/updated_12_25_data_610.csv', index=False)
+    daniels580.to_csv('data/raman_580.csv', index=False)
+    daniels610.to_csv('data/raman_610.csv', index=False)
 
     return None
 
@@ -240,11 +240,22 @@ def remove_pixel(df):
     df.to_csv('data/new_data_610.csv', index=False)
     return None
 
-if __name__ == '__main__':
-    df = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-    df2 = pd.read_csv('data/separate_by_sol_580.csv')
+def check_rows_in_dataframe(dataframe1, dataframe2): # written by chatGPT
+    # Convert DataFrames to sets for efficient comparison
+    set_dataframe1 = set(map(tuple, dataframe1.values))
+    set_dataframe2 = set(map(tuple, dataframe2.values))
 
-    sort_usingsol_index(df2, df, 'BSA').to_csv('data/bsa_conc_580.csv', index=False)
+    # Check if any rows of dataframe1 are in dataframe2
+    rows_in_dataframe2 = set_dataframe1.intersection(set_dataframe2)
+
+    return len(rows_in_dataframe2)
+
+if __name__ == '__main__':
+    df = pd.read_csv('data/old data 2-16-2024/new_data_580.csv')
+    df2 = pd.read_csv('data/raman_580.csv')
+
+    print(check_rows_in_dataframe(df, df2))
+
 
     exit()
 
@@ -263,7 +274,7 @@ if __name__ == '__main__':
 
     data_580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
     data_610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
-    data1 = pd.read_csv('data/separate_by_sol_580.csv')
+    data1 = pd.read_csv('data/old data 2-16-2024/separate_by_sol_580.csv')
 
     combine_data()
     exit()

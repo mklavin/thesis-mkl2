@@ -29,8 +29,8 @@ def integrate_dataframe(df, increment_size=10):
     return integrated_df
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/prepro_580.csv')
-    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
+    data = pd.read_csv('data/old data 2-16-2024/prepro_580.csv')
+    conc = pd.read_csv('data/old data 2-16-2024/data_580_concentrations_GSSG.csv')
 
     integrate_dataframe(data).to_csv('data/integrated_prepro_580.csv', index=False)
 

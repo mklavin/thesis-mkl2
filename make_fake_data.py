@@ -73,8 +73,8 @@ def make_data_gaussian():
     return None
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/phos_prepro_580.csv')
-    conc = pd.read_csv('data/phos_data_580_concentrations.csv')
+    data = pd.read_csv('data/old data 2-16-2024/phos_prepro_580.csv')
+    conc = pd.read_csv('data/old data 2-16-2024/phos_data_580_concentrations.csv')
     bestfit = pd.read_csv('data/fake_data/phos_data_580_lineofbestfit.csv')
 
     newdata, concs = update_points(data, bestfit)

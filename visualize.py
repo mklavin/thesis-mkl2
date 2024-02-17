@@ -520,8 +520,8 @@ def make_glu_peak_comparison_plot(BSA, PEG, phos):
     plt.gcf().set_size_inches(10, 5)
 
     # Set x-axis limits to zoom in on the region from x = 145 to x = 160
-    plt.xlim(135, 175)
-    plt.ylim(-0.1, .5)
+    #plt.xlim(700, 800)
+    #plt.ylim(-0.1, .5)
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
@@ -533,9 +533,9 @@ def make_glu_peak_comparison_plot(BSA, PEG, phos):
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
     # Set x-axis ticks for the zoomed-in region
-    x_ticks_positions = np.arange(135, 176, 2)
-    x_ticks_labels = [str(int(pos)) for pos in x_ticks_positions]
-    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+    # x_ticks_positions = np.arange(700, 800, 5)
+    # x_ticks_labels = [str(int(pos)) for pos in x_ticks_positions]
+    # plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     plt.grid(True)
 
@@ -551,17 +551,11 @@ def make_glu_peak_comparison_plot(BSA, PEG, phos):
     return None
 
 if __name__ == '__main__':
-    bsa = pd.read_csv('data/bsa_prepro_580.csv')
-    peg = pd.read_csv('data/peg_prepro_580.csv')
-    phos = pd.read_csv('data/phos_prepro_580.csv')
+    bsa = pd.read_csv('data/old data 2-16-2024/data_610.csv')
+    peg = pd.read_csv('data/old data 2-16-2024/peg_prepro_610.csv')
+    phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_610.csv')
 
-
-    data2 = pd.read_csv('data/prepro_580.csv')
-    soldata = pd.read_csv('data/separate_by_sol_610.csv')
-    conc = pd.read_csv('data/data_580_concentrations_GSSG.csv')
-
-
-    make_glu_peak_comparison_plot(bsa.iloc[1], peg.iloc[17], phos.iloc[16])
+    make_glu_peak_comparison_plot(bsa.iloc[2], peg.iloc[4], phos.iloc[1])
     exit()
     # PCA1 vs PCA2
     data, ratio = PCA1(data2, 5)

@@ -179,12 +179,13 @@ def calc_correlation_matrix(df, conc):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/bsa_prepro_580.csv')
+    df = pd.read_csv('data/old data 2-16-2024/phos_prepro_610.csv')
     glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
-    conc = pd.read_csv('data/bsa_conc_580.csv')
+    conc = pd.read_csv('data/old data 2-16-2024/phos_conc_610.csv')
     names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
 
-    calc_correlation_matrix(df, conc).sort_values(by=1338, ascending=False)[1338].to_csv('data/correlation analysis/corr_anal_bsa_580.csv')
+    df, ratio = PCA1(df, 10)
+    df.to_csv('data/pca_data/phos_prepro_PCA_610.csv', index=False)
     exit()
 
 
