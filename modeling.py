@@ -57,7 +57,7 @@ def evaluate_withmodels(x, y, names, n):
         i = 0
         listy = []
         while i < 3:
-            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.1) #new_trainingandtestsplit(x, y, names, n)
+            x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
             y_pred = np.maximum(y_pred, 0)
@@ -218,9 +218,9 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/pca_data/phos_prepro_PCA_610.csv')
-    y1 = pd.read_csv('data/old data 2-16-2024/phos_conc_610.csv')
-    names = pd.read_csv('data/old data 2-16-2024/data_580_names.csv')
+    x1 = pd.read_csv('data/pca_data/raman_prepro_PCA_580.csv')
+    y1 = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
+    names = pd.read_csv('data/raman_580_names.csv')
 
     print(evaluate_withmodels(x1, y1, names, .85))
     exit()
