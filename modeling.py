@@ -10,6 +10,7 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, m
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
+from scipy.cluster.hierarchy import linkage, fcluster
 
 def find_data_onbadspec(listy, x, y, names):
     """
@@ -217,12 +218,55 @@ def tune_param(x_train, y_train):
 
     return grid_search.best_estimator_
 
+def create_index_dataframe(dataframe, threshold):
+    # Calculate the correlation matrix
+    correlation_matrix = dataframe.corr()
+
+    # Create an empty DataFrame to store indices
+    index_dataframe = pd.DataFrame()
+
+    store = []
+
+    # Iterate over each column
+    for column_name in correlation_matrix.columns:
+        # Find indices where values are greater than the threshold
+        filtered_indices = correlation_matrix.index[correlation_matrix[column_name] > threshold].tolist()
+        store.append(filtered_indices)
+
+    max_length = max(len(lst) for lst in store)
+    print("Maximum length:", max_length)
+
+    for i in range(len(store)):
+        # Ensure all columns have the same size, fill with NaN if necessary
+        if len(store[i]) < max_length:
+            store[i].extend([None] * (max_length - len(store[i])))
+
+        # Add a new column to the index_dataframe with column_name as the header
+        index_dataframe[i] = pd.Series(store[i])
+
+    return index_dataframe
+
+def print_overlap_and_lengths(dataframe, column1, column2):
+    # Extract the values from the specified columns
+    values_column1 = set(dataframe[column1])
+    values_column2 = set(dataframe[column2])
+
+    # Find the overlapping values
+    overlapping_values = values_column1.intersection(values_column2)
+
+    # Print the number of overlapping values and the lengths of the columns
+    print(f"Number of overlapping values: {len(overlapping_values)}")
+    print(f"Length of {column1}: {len(values_column1)}")
+    print(f"Length of {column2}: {len(values_column2)}")
+
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/pca_data/raman_prepro_PCA_580.csv')
+    x1 = pd.read_csv('data/raman_prepro_580.csv')
     y1 = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/raman_580_names.csv')
 
-    print(evaluate_withmodels(x1, y1, names, .85))
+    correlations = create_index_dataframe(x1, .7)
+    print_overlap_and_lengths(correlations, 3, 4)
+
     exit()
 
     df = pd.concat([x1, y1], axis=1)
