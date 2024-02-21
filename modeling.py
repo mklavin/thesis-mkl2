@@ -259,13 +259,27 @@ def print_overlap_and_lengths(dataframe, column1, column2):
     print(f"Length of {column1}: {len(values_column1)}")
     print(f"Length of {column2}: {len(values_column2)}")
 
+def calculate_iou(dataframe, column1, column2):
+    # Extract unique values from the specified columns
+    values_column1 = set(dataframe[column1])
+    values_column2 = set(dataframe[column2])
+
+    # Calculate Intersection and Union
+    intersection = values_column1.intersection(values_column2)
+    union = values_column1.union(values_column2)
+
+    # Calculate IoU
+    iou = len(intersection) / len(union)
+
+    return iou
+
 if __name__ == '__main__':
     x1 = pd.read_csv('data/raman_prepro_580.csv')
     y1 = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/raman_580_names.csv')
 
     correlations = create_index_dataframe(x1, .7)
-    print_overlap_and_lengths(correlations, 3, 4)
+    print(calculate_iou(correlations, 1, 5))
 
     exit()
 
