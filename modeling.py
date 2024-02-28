@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 from scipy.cluster.hierarchy import linkage, fcluster
+from sklearn.cluster import KMeans
 
 def find_data_onbadspec(listy, x, y, names):
     """
@@ -219,8 +220,15 @@ def tune_param(x_train, y_train):
     return grid_search.best_estimator_
 
 def create_index_dataframe(dataframe, threshold):
+
     # Calculate the correlation matrix
     correlation_matrix = dataframe.corr()
+
+    # Get a boolean mask for the lower triangular part
+    mask = np.tri(correlation_matrix.shape[0], dtype=bool)
+
+    # Set values in the lower triangle to NaN
+    # correlation_matrix = correlation_matrix.mask(mask)
 
     # Create an empty DataFrame to store indices
     index_dataframe = pd.DataFrame()
@@ -246,19 +254,6 @@ def create_index_dataframe(dataframe, threshold):
 
     return index_dataframe
 
-def print_overlap_and_lengths(dataframe, column1, column2):
-    # Extract the values from the specified columns
-    values_column1 = set(dataframe[column1])
-    values_column2 = set(dataframe[column2])
-
-    # Find the overlapping values
-    overlapping_values = values_column1.intersection(values_column2)
-
-    # Print the number of overlapping values and the lengths of the columns
-    print(f"Number of overlapping values: {len(overlapping_values)}")
-    print(f"Length of {column1}: {len(values_column1)}")
-    print(f"Length of {column2}: {len(values_column2)}")
-
 def calculate_iou(dataframe, column1, column2):
     # Extract unique values from the specified columns
     values_column1 = set(dataframe[column1])
@@ -273,13 +268,59 @@ def calculate_iou(dataframe, column1, column2):
 
     return iou
 
+def reduce_components(df):
+
+    for column in df.columns:
+        for column2 in df.columns:
+            if column != column2 and calculate_iou(df, column, column2) > 0.8:
+                # Combine columns with high IoU
+                combined_column = pd.Series(pd.concat([df[column], df[column2]]).unique())
+
+                # Add new combined column to the DataFrame
+                new_column_name = f"{column}_{column2}"
+                df[new_column_name] = combined_column
+
+                # Drop the marked columns
+                df = df.drop(columns=[column, column2], errors='ignore')
+                print(df)
+                return reduce_components(df)
+
+    return df
+
+def cluster(df):
+
+    # Visualize the synthetic data
+    plt.scatter(df['Feature1'], df['Feature2'], s=50, cmap='viridis')
+    plt.title('Synthetic Data with Three Clusters')
+    plt.xlabel('Feature1')
+    plt.ylabel('Feature2')
+    plt.show()
+
+    # Apply k-means clustering with k=3 (number of clusters)
+    kmeans = KMeans(n_clusters=3, random_state=42)
+    df['Cluster'] = kmeans.fit_predict(df)
+
+    # Visualize the clusters
+    plt.scatter(df['Feature1'], df['Feature2'], c=df['Cluster'], s=50, cmap='viridis')
+    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], c='red', marker='X', s=200, label='Centroids')
+    plt.title('Clusters Identified by K-Means')
+    plt.xlabel('Feature1')
+    plt.ylabel('Feature2')
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
     x1 = pd.read_csv('data/raman_prepro_580.csv')
     y1 = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
     names = pd.read_csv('data/raman_580_names.csv')
+    df = pd.read_csv('data/correlation analysis/prepro_corr_points_580.csv')
 
-    correlations = create_index_dataframe(x1, .7)
-    print(calculate_iou(correlations, 1, 5))
+    cluster(df)
+    exit()
+
+
+
+    create_index_dataframe(x1, .65).to_csv('data/correlation analysis/prepro_corr_points_580.csv', index=False)
 
     exit()
 

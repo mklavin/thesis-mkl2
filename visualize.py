@@ -51,21 +51,22 @@ def plot_and_cluster_DBSCAN(dataframe):
     return clustering.labels_
 
 def plot_and_cluster_kmeans(dataframe):
-    kmeans = KMeans(n_clusters=3)
-    clustering = kmeans.fit(dataframe)
+    kmeans = KMeans(n_clusters=5)
+    clustering = kmeans.fit(dataframe.T)
+
 
     # uncover to make scatterplot
-    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3,
-                                   hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
-                                   hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
+    # scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3,
+    #                                hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
+    #                                hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
     sns.set(font_scale=2)
     plt.tick_params(axis='both', which='major', labelsize=14)
     plt.xlabel('UMAP1', fontsize=16)
     plt.ylabel('UMAP2', fontsize=16)
     plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
-    scatter_fig = scatter_plot.get_figure()
-    scatter_fig.savefig('graph2.png', dpi=1200)
-    plt.show()
+    # scatter_fig = scatter_plot.get_figure()
+    # scatter_fig.savefig('graph2.png', dpi=1200)
+
     return clustering.labels_
 
 def make_baselineplot(x, y):
@@ -550,12 +551,34 @@ def make_glu_peak_comparison_plot(BSA, PEG, phos):
 
     return None
 
+def sort_clustering_labels(labels):
+    # Create three lists based on the values in values_list
+    list1 = [i for i, value in enumerate(labels) if value == 1]
+    list2 = [i for i, value in enumerate(labels) if value == 2]
+    list3 = [i for i, value in enumerate(labels) if value == 3]
+    list4 = [i for i, value in enumerate(labels) if value == 4]
+    list5 = [i for i, value in enumerate(labels) if value == 5]
+
+    # Display the resulting lists
+    print("List 1:", list1)
+    print("List 2:", list2)
+    print("List 3:", list3)
+    print("List 4:", list4)
+    print("List 5:", list5)
+
 if __name__ == '__main__':
     bsa = pd.read_csv('data/old data 2-16-2024/data_610.csv')
     peg = pd.read_csv('data/old data 2-16-2024/peg_prepro_610.csv')
     phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_610.csv')
+    df = pd.read_csv('data/raman_prepro_580.csv')
 
-    make_glu_peak_comparison_plot(bsa.iloc[2], peg.iloc[4], phos.iloc[1])
+    x = plot_and_cluster_kmeans(df)
+    sort_clustering_labels(x)
+
+    # now that we have clustering labels/clusters, try to figure out what the labels correspond to
+    # maybe try plotting where the different points appear on a spectra with dif colors
+    # also try clustering with separate solvents- different solvents might confuse
+
     exit()
     # PCA1 vs PCA2
     data, ratio = PCA1(data2, 5)

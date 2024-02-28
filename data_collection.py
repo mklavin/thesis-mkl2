@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from preprocessing import PCA1
+from sklearn import decomposition
 
 # functions used for organizing raw Raman data files
 
@@ -251,10 +253,23 @@ def check_rows_in_dataframe(dataframe1, dataframe2): # written by chatGPT
     return len(rows_in_dataframe2)
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/old data 2-16-2024/new_data_580.csv')
+    df = pd.read_csv('data/raman_580_names.csv')
     df2 = pd.read_csv('data/raman_580.csv')
 
-    print(check_rows_in_dataframe(df, df2))
+    # testy = {'1': [1, 2, 3], '2': [2, 4, 5.5], '3': [2, -1, 7], '4': [-2, 1, -7]}
+    # testy2 = {'1': [1, 2, 3], '2': [2, 4, 5.5], '3': [3.9, 8, 9.1]}
+    # testy = pd.DataFrame(data=testy)
+    # testy2 = pd.DataFrame(data=testy2)
+    # print(testy.T)
+    #
+    # # apply PCA
+    # pca = decomposition.PCA(n_components=1)
+    # X = pca.fit_transform(testy.T)
+    # loadings = pd.DataFrame(pca.components_.T, columns=['PC1'])
+    # print(loadings)
+    # exit()
+
+    separate_bysol(df).to_csv('data/separate_by_sol_580.csv', index=False)
 
 
     exit()
