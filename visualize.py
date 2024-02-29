@@ -7,7 +7,9 @@ from sklearn.cluster import DBSCAN, KMeans
 from umap import UMAP
 import pybaselines.polynomial
 from collections import Counter
+from sklearn.preprocessing import StandardScaler
 from preprocessing import PCA1, scale_rows_to_max
+from sklearn.impute import KNNImputer
 
 # MOST PLOTS ARE PARTIALLY AI GENERATED VIA CHATGPT
 
@@ -566,14 +568,25 @@ def sort_clustering_labels(labels):
     print("List 4:", list4)
     print("List 5:", list5)
 
+    return list1, list2, list3, list4
+
 if __name__ == '__main__':
     bsa = pd.read_csv('data/old data 2-16-2024/data_610.csv')
     peg = pd.read_csv('data/old data 2-16-2024/peg_prepro_610.csv')
     phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_610.csv')
     df = pd.read_csv('data/raman_prepro_580.csv')
 
+    # Impute missing values using KNNImputer
+    imputer = KNNImputer(n_neighbors=2)
+    df_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+
+    # scalar = StandardScaler().fit(df)
+    # df = scalar.transform(df)
+
     x = plot_and_cluster_kmeans(df)
     sort_clustering_labels(x)
+
+
 
     # now that we have clustering labels/clusters, try to figure out what the labels correspond to
     # maybe try plotting where the different points appear on a spectra with dif colors
