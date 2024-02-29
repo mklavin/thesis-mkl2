@@ -34,23 +34,23 @@ def separate_by_sol_andplot(data, indices):
     return output.T
 
 def plot_and_cluster_DBSCAN(dataframe):
-    dataframe, ratio = PCA1(dataframe, 2)
-    print(ratio)
-    clustering = DBSCAN(eps=60).fit(dataframe)
+
+    dbscan = DBSCAN(eps=.35)
+    dataframe['Cluster'] = dbscan.fit_predict(dataframe)
 
     # uncover to make scatterplot
-    scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.1, palette='gist_ncar',
-                    hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
-                    hue=clustering.labels_).set_title(f"Neighbors= {5}, eps=5")
+    # scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.1, palette='gist_ncar',
+    #                 hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
+    #                 hue=clustering.labels_).set_title(f"Neighbors= {5}, eps=5")
     sns.set(font_scale=2)
-    plt.tick_params(axis='both', which='major', labelsize=14)
-    plt.xlabel('UMAP1', fontsize=16)
-    plt.ylabel('UMAP2', fontsize=16)
-    #plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
-    scatter_fig = scatter_plot.get_figure()
-    scatter_fig.savefig('graph2.png', dpi= 1200)
-    plt.show()
-    return clustering.labels_
+    # plt.tick_params(axis='both', which='major', labelsize=14)
+    # plt.xlabel('UMAP1', fontsize=16)
+    # plt.ylabel('UMAP2', fontsize=16)
+    # #plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
+    # scatter_fig = scatter_plot.get_figure()
+    # scatter_fig.savefig('graph2.png', dpi= 1200)
+    # plt.show()
+    return dataframe['Cluster']
 
 def plot_and_cluster_kmeans(dataframe):
     kmeans = KMeans(n_clusters=5)
@@ -61,15 +61,63 @@ def plot_and_cluster_kmeans(dataframe):
     # scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3,
     #                                hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
     #                                hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
-    sns.set(font_scale=2)
-    plt.tick_params(axis='both', which='major', labelsize=14)
-    plt.xlabel('UMAP1', fontsize=16)
-    plt.ylabel('UMAP2', fontsize=16)
-    plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
+    # sns.set(font_scale=2)
+    # plt.tick_params(axis='both', which='major', labelsize=14)
+    # plt.xlabel('UMAP1', fontsize=16)
+    # plt.ylabel('UMAP2', fontsize=16)
+    # plt.title(label=f"Clustering on 10-D UMAP Values", fontsize=20)
     # scatter_fig = scatter_plot.get_figure()
     # scatter_fig.savefig('graph2.png', dpi=1200)
 
     return clustering.labels_
+
+def kmeans_missing(X, n_clusters, max_iter=10):
+    """Perform K-Means clustering on data with missing values.
+
+    Args:
+      X: An [n_samples, n_features] array of data to cluster.
+      n_clusters: Number of clusters to form.
+      max_iter: Maximum number of EM iterations to perform.
+
+    Returns:
+      labels: An [n_samples] vector of integer labels.
+      centroids: An [n_clusters, n_features] array of cluster centroids.
+      X_hat: Copy of X with the missing values filled in.
+    """
+
+    # Initialize missing values to their column means
+    X = X.T
+    missing = ~np.isfinite(X)
+    mu = np.nanmean(X, 0, keepdims=1)
+    X_hat = np.where(missing, mu, X)
+    print(X_hat)
+
+    for i in range(max_iter):
+        if i > 0:
+            # initialize KMeans with the previous set of centroids. this is much
+            # faster and makes it easier to check convergence (since labels
+            # won't be permuted on every iteration), but might be more prone to
+            # getting stuck in local minima.
+            cls = KMeans(n_clusters, init=prev_centroids)
+        else:
+            # do multiple random initializations in parallel
+            cls = KMeans(n_clusters)
+
+        # perform clustering on the filled-in data
+        labels = cls.fit_predict(X_hat)
+        centroids = cls.cluster_centers_
+
+        # fill in the missing values based on their cluster centroids
+        X_hat[missing] = centroids[labels][missing]
+
+        # when the labels have stopped changing then we have converged
+        if i > 0 and np.all(labels == prev_labels):
+            break
+
+        prev_labels = labels
+        prev_centroids = cls.cluster_centers_
+
+    return labels, centroids, X_hat
 
 def make_baselineplot(x, y):
     # Fit a polynomial to the data
@@ -554,37 +602,57 @@ def make_glu_peak_comparison_plot(BSA, PEG, phos):
     return None
 
 def sort_clustering_labels(labels):
-    # Create three lists based on the values in values_list
-    list1 = [i for i, value in enumerate(labels) if value == 1]
-    list2 = [i for i, value in enumerate(labels) if value == 2]
-    list3 = [i for i, value in enumerate(labels) if value == 3]
-    list4 = [i for i, value in enumerate(labels) if value == 4]
-    list5 = [i for i, value in enumerate(labels) if value == 5]
+    # Create a dictionary to store lists based on unique label values
+    label_lists = {}
+
+    # Iterate over unique labels
+    for unique_label in set(labels):
+        label_lists[unique_label] = [i for i, value in enumerate(labels) if value == unique_label]
 
     # Display the resulting lists
-    print("List 1:", list1)
-    print("List 2:", list2)
-    print("List 3:", list3)
-    print("List 4:", list4)
-    print("List 5:", list5)
+    for label, indices in label_lists.items():
+        print(f"List {label}:", indices)
 
-    return list1, list2, list3, list4
+    return label_lists
+
+def plot_data_with_colors(dictionary, data):
+    colors = ['red', 'blue', 'green']  # You can extend this list for more colors
+
+    # Create a dictionary to map data points to their respective colors
+    data_color_mapping = {}
+    for key, values in dictionary.items():
+        color = colors[key % len(colors)]  # Use modulo to cycle through available colors
+        for value in values:
+            data_color_mapping[value] = color
+
+    # Sort the data points to ensure they are connected in the correct order
+    sorted_data_points = sorted(data_color_mapping.keys())
+
+    # Plot the data points with lines connecting them
+    for i in range(len(sorted_data_points) - 1):
+        start_point = sorted_data_points[i]
+        end_point = sorted_data_points[i + 1]
+
+        plt.plot([start_point, end_point], [data[start_point], data[end_point]], color=data_color_mapping[start_point])
+
+    # Show the plot
+    plt.show()
 
 if __name__ == '__main__':
     bsa = pd.read_csv('data/old data 2-16-2024/data_610.csv')
     peg = pd.read_csv('data/old data 2-16-2024/peg_prepro_610.csv')
-    phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_610.csv')
+    phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_580.csv')
     df = pd.read_csv('data/raman_prepro_580.csv')
+    df2 = pd.read_csv('data/correlation analysis/prepro_corr_matrix_580.csv')
 
-    # Impute missing values using KNNImputer
-    imputer = KNNImputer(n_neighbors=2)
-    df_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+    # Remove the first 108 columns
+    df2 = df2.iloc[:, 108:]
+    df = df.iloc[:, 108:]
 
-    # scalar = StandardScaler().fit(df)
-    # df = scalar.transform(df)
 
-    x = plot_and_cluster_kmeans(df)
-    sort_clustering_labels(x)
+    x = plot_and_cluster_kmeans(df2)
+    labels = sort_clustering_labels(x)
+    plot_data_with_colors(labels, df.iloc[2])
 
 
 
