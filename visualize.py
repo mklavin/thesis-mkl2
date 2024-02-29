@@ -639,17 +639,9 @@ def plot_data_with_colors(dictionary, data):
     plt.show()
 
 if __name__ == '__main__':
-    bsa = pd.read_csv('data/old data 2-16-2024/data_610.csv')
-    peg = pd.read_csv('data/old data 2-16-2024/peg_prepro_610.csv')
-    phos = pd.read_csv('data/old data 2-16-2024/phos_prepro_580.csv')
-    df = pd.read_csv('data/raman_prepro_580.csv')
-    df2 = pd.read_csv('data/correlation analysis/prepro_corr_matrix_580.csv')
+    df = pd.read_csv('data/raman_580.csv')
+    df2 = pd.read_csv('data/correlation analysis/peg_prepro_corr_matrix_580.csv')
 
-    # Remove the first 108 columns
-    df2 = df2.iloc[:, 108:]
-    df = df.iloc[:, 107:]
-    print(df2.iloc[2])
-    print(df.iloc[2])
 
 
     x = plot_and_cluster_kmeans(df2)

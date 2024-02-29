@@ -319,37 +319,3 @@ if __name__ == '__main__':
     exit()
 
 
-
-    create_index_dataframe(x1, .65).to_csv('data/correlation analysis/prepro_corr_points_580.csv', index=False)
-
-    exit()
-
-    df = pd.concat([x1, y1], axis=1)
-    print(df)
-    df = pd.DataFrame(np.corrcoef(df.T))
-    print(df)
-    sorted_df = df.sort_values(by=1339, ascending=False)
-    print(sorted_df[1339])
-    exit()
-
-    y_values = np.array(y1)
-    # Perform the division
-    normalized_y = y_values / np.max(y_values)
-
-    x_values = np.array(x1['150'])
-    # Perform the division
-    normalized_x = x_values / np.max(x_values)
-
-
-    exit()
-
-    evaluate_withmodels(x1, y1, names, .75)
-
-
-    # MLP's LBFGS solver works best for 610 region and MLP's SGD solver works best for 580 region
-    # SVM linear solver works best for 580 region
-
-
-
-
-
