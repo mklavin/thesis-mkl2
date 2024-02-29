@@ -616,7 +616,7 @@ def sort_clustering_labels(labels):
     return label_lists
 
 def plot_data_with_colors(dictionary, data):
-    colors = ['red', 'blue', 'green']  # You can extend this list for more colors
+    colors = ['red', 'blue', 'green', 'purple', 'orange']  # You can extend this list for more colors
 
     # Create a dictionary to map data points to their respective colors
     data_color_mapping = {}
@@ -647,12 +647,14 @@ if __name__ == '__main__':
 
     # Remove the first 108 columns
     df2 = df2.iloc[:, 108:]
-    df = df.iloc[:, 108:]
+    df = df.iloc[:, 107:]
+    print(df2.iloc[2])
+    print(df.iloc[2])
 
 
     x = plot_and_cluster_kmeans(df2)
     labels = sort_clustering_labels(x)
-    plot_data_with_colors(labels, df.iloc[2])
+    plot_data_with_colors(labels, df.iloc[1])
 
 
 
