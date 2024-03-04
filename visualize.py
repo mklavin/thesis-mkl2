@@ -616,7 +616,7 @@ def sort_clustering_labels(labels):
     return label_lists
 
 def plot_data_with_colors(dictionary, data):
-    colors = ['red', 'blue', 'green', 'purple', 'orange']  # You can extend this list for more colors
+    colors = ['red', 'blue', 'green', 'purple', 'orange', 'pink']  # You can extend this list for more colors
 
     # Create a dictionary to map data points to their respective colors
     data_color_mapping = {}
@@ -640,11 +640,11 @@ def plot_data_with_colors(dictionary, data):
 
 if __name__ == '__main__':
     df = pd.read_csv('data/raman_580.csv')
-    df2 = pd.read_csv('data/correlation analysis/phos_prepro_corr_matrix_580.csv')
+    df2 = pd.read_csv('data/correlation analysis/peg_prepro_corr_matrix_580.csv')
 
 
 
-    x = plot_and_cluster_kmeans(df2, 4)
+    x = plot_and_cluster_kmeans(df2, 6)
     labels = sort_clustering_labels(x)
     plot_data_with_colors(labels, df.iloc[0])
 
