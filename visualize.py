@@ -52,8 +52,8 @@ def plot_and_cluster_DBSCAN(dataframe):
     # plt.show()
     return dataframe['Cluster']
 
-def plot_and_cluster_kmeans(dataframe):
-    kmeans = KMeans(n_clusters=5)
+def plot_and_cluster_kmeans(dataframe, num_clust):
+    kmeans = KMeans(n_clusters=num_clust)
     clustering = kmeans.fit(dataframe.T)
 
 
@@ -640,19 +640,15 @@ def plot_data_with_colors(dictionary, data):
 
 if __name__ == '__main__':
     df = pd.read_csv('data/raman_580.csv')
-    df2 = pd.read_csv('data/correlation analysis/peg_prepro_corr_matrix_580.csv')
+    df2 = pd.read_csv('data/correlation analysis/phos_prepro_corr_matrix_580.csv')
 
 
 
-    x = plot_and_cluster_kmeans(df2)
+    x = plot_and_cluster_kmeans(df2, 4)
     labels = sort_clustering_labels(x)
-    plot_data_with_colors(labels, df.iloc[1])
+    plot_data_with_colors(labels, df.iloc[0])
 
 
-
-    # now that we have clustering labels/clusters, try to figure out what the labels correspond to
-    # maybe try plotting where the different points appear on a spectra with dif colors
-    # also try clustering with separate solvents- different solvents might confuse
 
     exit()
     # PCA1 vs PCA2
