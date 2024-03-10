@@ -277,24 +277,24 @@ def reorder_rows(df, indices):
 
     return newdf
 
+def remove_rows(df, indices_to_remove):
+    newdf = df.drop(indices_to_remove).reset_index(drop=True)
+    return newdf
+
 if __name__ == '__main__':
     df = pd.read_csv('data/March 7 Data Collection/150gg_data.csv')
     df2 = pd.read_csv('data/names_150gg_data.csv')
 
-    excluded_values = [64, 65, 66, 73, 74, 75, 76, 77, 78, 79, 80, 82, 84, 86, 88, 89, 90, 91, 93, 95, 96, 99, 101, 102, 103, 104, 105, 106, 110, 111]
 
-    generated_list = [x for x in range(113) if x not in excluded_values]
-    print(generated_list)
 
-    df = reorder_rows(df, generated_list)
-    print(df)
+
 
 
     # now the rows are flipped
     # need to delete the bad rows, then zoom in
 
-    df = df.iloc[:, 523:882]
-    df = df.drop(columns= ['564'])
+
+
     for i in range(len(df)):
         plt.plot(df.iloc[i])
         plt.title(str(df2.iloc[i]))
@@ -305,10 +305,6 @@ if __name__ == '__main__':
 
 
     exit()
-    for i in range(len(df)):
-        plt.plot(df.iloc[i])
-        plt.title(str(df2.iloc[i]))
-        plt.show()
 
 
 

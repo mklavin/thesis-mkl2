@@ -34,6 +34,11 @@ def separate_by_sol_andplot(data, indices):
     return output.T
 
 def plot_and_cluster_DBSCAN(dataframe):
+    """
+    clustering based on DBSCAN values
+    :param dataframe:
+    :return:
+    """
 
     dbscan = DBSCAN(eps=.35)
     dataframe['Cluster'] = dbscan.fit_predict(dataframe)
@@ -644,9 +649,9 @@ if __name__ == '__main__':
 
 
 
-    x = plot_and_cluster_kmeans(df2, 6)
+    x = plot_and_cluster_kmeans(df2, 4)
     labels = sort_clustering_labels(x)
-    plot_data_with_colors(labels, df.iloc[0])
+    plot_data_with_colors(labels, df.iloc[1])
 
 
 

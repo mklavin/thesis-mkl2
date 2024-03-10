@@ -84,7 +84,11 @@ def scale_rows_to_max(dataframe, region:str):
     if region == '580':
         max_values = dataframe.iloc[:, 650:790].max(axis=1)
 
-    scaled_dataframe = dataframe.mul(20 / max_values, axis=0)
+    scaled_dataframe = dataframe.mul(20/max_values, axis=0)
+
+    plt.plot(scaled_dataframe.iloc[0])
+    plt.plot(scaled_dataframe.iloc[10])
+    plt.show()
 
     return scaled_dataframe
 
@@ -183,6 +187,8 @@ if __name__ == '__main__':
     glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
     conc = pd.read_csv('data/old data 2-16-2024/phos_conc_610.csv')
     names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
+
+    scale_rows_to_max(df, '580')
 
     exit()
 
