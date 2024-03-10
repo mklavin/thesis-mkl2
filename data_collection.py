@@ -43,9 +43,12 @@ def combine_data():
     return None
 
 def separate_bysol(df):
-    # find indices of each solution
-    # used for analysis and semi-random training and test split
-    # df contains spectra names 
+    """
+    used to find the indices of each solvent
+    :param df: dataframe with a column of spectral names
+    :return: dataframe with columns named by solvents where rows are indices of spectra
+    of a particular solvent from the input df
+    """
 
     # Define the substrings to search for
     substrings = ['BSA', 'PEG', 'phos']
@@ -91,8 +94,12 @@ def is_nan_string(string):
         return False
 
 def stitch_spectra(spec_580, spec_610):
-    # combine two spectral windows
-    # will use later
+    """
+    used to stitch spectral windows
+    :param spec_580: dataframe containing 580 spectra
+    :param spec_610: dataframe containing 610 spectra
+    :return: dataframe of combined spectra along the x-axis
+    """
 
     # Initialize an empty list to store DataFrames for concatenation
     combined_dfs = []
@@ -147,7 +154,7 @@ def gather_data():
     # loops through all of the raw data files in data and converts to one csv file
     # also makes files with the name of data and labels
 
-    folder_path = 'data/150 gg data'  # filepath to folder of data
+    folder_path = 'data/March 7 Data Collection'  # filepath to folder of data
     n = 1340  # length of spectra
     columns = [i for i in range(1, n)]  # create list of same length
     data = pd.DataFrame(columns=columns)  # empty dataframe with columns for each value
@@ -163,13 +170,19 @@ def gather_data():
     # adding feature columns and labels
     data['conc_GSH'] = data['names'].str.extract(r'(?:.*GSSG.*)?(\d+\s*mM)')[0]  # these lines from chatGPT
     data['conc_GSH'] = data['conc_GSH'].str.replace('mM', '').str.strip()
-    # Reorder the columns to have 'conc_GSH' as the first column
-    data = data[['conc_GSH'] + [col for col in data.columns if col != 'conc_GSH']]
 
-    contains_580 = data[data['names'].str.contains('580')]
+    # adding feature columns and labels
+    data['conc_GSSG'] = data['names'].str.extract(r'(?:.*GSH.*)?(\d+\s*mM)')[0]  # these lines from chatGPT
+    data['conc_GSSG'] = data['conc_GSSG'].str.replace('mM', '').str.strip()
+
+    # Reorder the columns to have concentration as the two columns
+    data = data[['conc_GSH'] + [col for col in data.columns if col != 'conc_GSH']]
+    data = data[['conc_GSSG'] + [col for col in data.columns if col != 'conc_GSSG']]
+
+    contains_580 = data[data['names'].str.contains('150gg')] #data[data['names'].str.contains('580')]
     contains_610 = data[data['names'].str.contains('610')]
 
-    contains_580 = contains_580.drop(columns=['conc_GSH', 563])
+    #contains_580 = contains_580.drop(columns=['conc_GSH', 563])
     #contains_610 = contains_610.drop(columns=['names', 'conc_GSSG'])
 
     return contains_580#, contains_610
@@ -256,60 +269,53 @@ def check_rows_in_dataframe(dataframe1, dataframe2): # written by chatGPT
 
     return len(rows_in_dataframe2)
 
+def reorder_rows(df, indices):
+    newdf = df.copy()
+
+    for i in indices:
+        newdf.iloc[i] = df.iloc[i][::-1].values
+
+    return newdf
+
 if __name__ == '__main__':
-    df = pd.read_csv('data/separate_by_sol_580.csv')
-    df2 = pd.read_csv('data/raman_prepro_580.csv')
+    df = pd.read_csv('data/March 7 Data Collection/150gg_data.csv')
+    df2 = pd.read_csv('data/names_150gg_data.csv')
 
-    #separate_bysol(df).to_csv('data/separate_by_sol_580.csv', index=False)
+    excluded_values = [64, 65, 66, 73, 74, 75, 76, 77, 78, 79, 80, 82, 84, 86, 88, 89, 90, 91, 93, 95, 96, 99, 101, 102, 103, 104, 105, 106, 110, 111]
 
-    sort_usingsol_index(df, df2, 'phos').to_csv('data/phos_prepro_580.csv', index=False)
+    generated_list = [x for x in range(113) if x not in excluded_values]
+    print(generated_list)
 
-    exit()
+    df = reorder_rows(df, generated_list)
+    print(df)
 
-    df = pd.read_csv('data/150 gg data/150ggdata_cut.csv')
-    vals = list(df['685'])
-    for i in range(len(vals)):
-        df.iloc[i] = df.iloc[i]-(vals[i]-95719)
-    plt.plot(df.iloc[0])
-    plt.plot(df.iloc[1])
-    plt.plot(df.iloc[2])
-    plt.plot(df.iloc[3])
-    plt.plot(df.iloc[4])
-    plt.show()
-    exit()
-    # 519-841
 
-    data_580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
-    data_610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
-    data1 = pd.read_csv('data/old data 2-16-2024/separate_by_sol_580.csv')
+    # now the rows are flipped
+    # need to delete the bad rows, then zoom in
 
-    combine_data()
-    exit()
+    df = df.iloc[:, 523:882]
+    df = df.drop(columns= ['564'])
+    for i in range(len(df)):
+        plt.plot(df.iloc[i])
+        plt.title(str(df2.iloc[i]))
+        plt.show()
 
-    conc_580 = data_580['conc_GSSG']
-    conc_610 = data_610['conc_GSH']
-
-    names_580 = data_580['names']
-    names_610 = data_610['names']
-
-    conc_580.to_csv('data/new_data_580_concentrations_GSSG.csv', index=False)
-    conc_610.to_csv('data/new_data_610_concentrations_GSH.csv', index=False)
-    names_580.to_csv('data/new_data_580_names.csv', index=False)
-    names_610.to_csv('data/new_data_610_names.csv', index=False)
-
-    data_580 = data_580.drop(columns=['conc_GSSG', 'names'])
-    data_610 = data_610.drop(columns=['conc_GSH', 'names'])
-
-    data_580.to_csv('data/new_data_580.csv', index=False)
-    data_610.to_csv('data/new_data_610.csv', index=False)
-
+    # spectra are weirdly not aligned??
+    # check how the flipping worked
 
 
     exit()
+    for i in range(len(df)):
+        plt.plot(df.iloc[i])
+        plt.title(str(df2.iloc[i]))
+        plt.show()
 
-    x = sort_usingsol_index(data1, data, 'phos')
 
-    x.to_csv('data/phos_data_580.csv', index=False)
+
+
+
+
+
 
 
 
