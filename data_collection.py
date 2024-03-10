@@ -277,32 +277,16 @@ def reorder_rows(df, indices):
 
     return newdf
 
-def remove_rows(df, indices_to_remove):
-    newdf = df.drop(indices_to_remove).reset_index(drop=True)
-    return newdf
+def remove_index_column(filepath):
+    df = pd.read_csv(filepath)
+
+    df = df.drop(columns=['index'])
+
+    df.to_csv(filepath, index=False)
 
 if __name__ == '__main__':
     df = pd.read_csv('data/March 7 Data Collection/150gg_data.csv')
     df2 = pd.read_csv('data/names_150gg_data.csv')
-
-
-
-
-
-
-    # now the rows are flipped
-    # need to delete the bad rows, then zoom in
-
-
-
-    for i in range(len(df)):
-        plt.plot(df.iloc[i])
-        plt.title(str(df2.iloc[i]))
-        plt.show()
-
-    # spectra are weirdly not aligned??
-    # check how the flipping worked
-
 
     exit()
 
