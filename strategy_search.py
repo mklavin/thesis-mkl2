@@ -50,15 +50,17 @@ def put_together_preprocess_search(data, conc, region:str):
         df = pd.concat([df, conc], axis=1)
         df = pd.DataFrame(np.corrcoef(df.T)) # CALCULATING COVARIANCE MATRIX
 
+        # changed this for 150gg data on 3/16
         if region == '610':
-            df = df.iloc[730:851]
+            df = df.iloc[250:350]
         if region == '580':
-            df = df.iloc[140:160]
+            df = df.iloc[12:36]
 
-        sorted_df = df.sort_values(by=1338, ascending=False) # only select the column that corresponds to concentrations
-        sorted_df = sorted_df[[1338]].iloc[1:]
-        results.append(max(sorted_df[1338]))
-        print(max(sorted_df[1338]), results)
+        sorted_df = df.sort_values(by=359, ascending=False) # only select the column that corresponds to concentrations
+        sorted_df = sorted_df[[359]].iloc[1:]
+        print(sorted_df)
+        results.append(max(sorted_df[359]))
+        print(max(sorted_df[359]), results)
 
     max_index = results.index(max(results))
 
@@ -103,9 +105,9 @@ def polynomial_search(df, conc):
             baseline_removed = pd.concat([baseline_removed, conc], axis=1)
             baseline_removed = pd.DataFrame(np.corrcoef(baseline_removed.T))
 
-            sorted_df = baseline_removed.sort_values(by=1338, ascending=False)
-            sorted_df = sorted_df[[1338]].iloc[1:]
-            polyorders.append(max(sorted_df[1338]))
+            sorted_df = baseline_removed.sort_values(by=359, ascending=False)
+            sorted_df = sorted_df[[359]].iloc[1:]
+            polyorders.append(max(sorted_df[359]))
         max_poly = polyorders.index(max(polyorders))
         results.append([j, max_poly, max(polyorders)])
 
@@ -124,7 +126,7 @@ def baseline_search(df, conc, region):
     between the glutathione peak and concentration
     """
     func = [pybaselines.whittaker.asls, pybaselines.whittaker.iasls, pybaselines.whittaker.airpls,
-            pybaselines.whittaker.arpls, pybaselines.whittaker.drpls, pybaselines.whittaker.iarpls,
+            pybaselines.whittaker.arpls, pybaselines.whittaker.drpls,
             pybaselines.whittaker.aspls, pybaselines.whittaker.psalsa, pybaselines.whittaker.derpsalsa,
             pybaselines.morphological.mpls, pybaselines.morphological.mor, pybaselines.morphological.imor,
             pybaselines.morphological.mormol, pybaselines.morphological.amormol, pybaselines.morphological.rolling_ball,
@@ -158,18 +160,19 @@ def baseline_search(df, conc, region):
         baseline_removed = pd.concat(baseline_removed, axis=0, ignore_index=True)
         baseline_removed = pd.concat([baseline_removed, conc], axis=1)
         baseline_removed = pd.DataFrame(np.corrcoef(baseline_removed.T))
+
         if region == '610':
-            baseline_removed = baseline_removed.iloc[730:851]
+            baseline_removed = baseline_removed.iloc[250:350]
         if region == '580':
-            baseline_removed = baseline_removed.iloc[140:160]
+            baseline_removed = baseline_removed.iloc[12:36]
 
         # Add an index column
         # baseline_removed.reset_index(inplace=True)
 
         # Sort column 'A' in ascending order while preserving the index
-        sorted_df = baseline_removed.sort_values(by=1338, ascending=False)
-        sorted_df = sorted_df[[1338]].iloc[1:]
-        results.append(max(sorted_df[1338]))
+        sorted_df = baseline_removed.sort_values(by=359, ascending=False)
+        sorted_df = sorted_df[[359]].iloc[1:]
+        results.append(max(sorted_df[359]))
 
     max_index = results.index(max(results))
 
@@ -178,11 +181,14 @@ def baseline_search(df, conc, region):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/old data 2-16-2024/data_610.csv')
-    conc = pd.read_csv('data/old data 2-16-2024/data_610_concentrations_GSH.csv')
+    df = pd.read_csv('data/raman_580.csv')
+    df2 = pd.read_csv('data/150gg_data_cropped.csv')
+    conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
+    conc2 = pd.read_csv('data/GSH_conc_150gg_data.csv')
 
-    df = put_together_preprocess_search(df, conc, '610')
-    # df.to_csv('data/raman_prepro_610.csv', index=False)
+
+    df = put_together_preprocess_search(df2, conc2, '610')
+    df.to_csv('data/150gg_data_prepro.csv', index=False)
 
     # why is the covariance high but the models perform poorly?
 

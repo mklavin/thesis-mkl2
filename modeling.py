@@ -59,7 +59,7 @@ def evaluate_withmodels(x, y, names, n):
         i = 0
         listy = []
         while i < 3:
-            x_train, x_test, y_train, y_test = new_trainingandtestsplit(x, y, names, n)
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=n) #new_trainingandtestsplit(x, y, names, n)
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
             y_pred = np.maximum(y_pred, 0)
@@ -310,12 +310,12 @@ def cluster(df):
     plt.show()
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/raman_prepro_580.csv')
-    y1 = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
-    names = pd.read_csv('data/raman_580_names.csv')
+    x1 = pd.read_csv('data/150gg_data_prepro.csv')
+    y1 = pd.read_csv('data/GSSG_conc_150gg_data.csv')
+    names = pd.read_csv('data/names_150gg_data.csv')
     df = pd.read_csv('data/correlation analysis/prepro_corr_points_580.csv')
 
-    cluster(df)
+    evaluate_withmodels(x1, y1, names, .15)
     exit()
 
 

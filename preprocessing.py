@@ -80,15 +80,11 @@ def scale_rows_to_max(dataframe, region:str):
 
     # Calculate the maximum value in each row
     if region == '610':
-        max_values = dataframe.iloc[:, 1063:].max(axis=1)
+        max_values = dataframe.iloc[:, 140:170].max(axis=1)
     if region == '580':
-        max_values = dataframe.iloc[:, 650:790].max(axis=1)
+        max_values = dataframe.iloc[:, 140:170].max(axis=1)
 
     scaled_dataframe = dataframe.mul(20/max_values, axis=0)
-
-    plt.plot(scaled_dataframe.iloc[0])
-    plt.plot(scaled_dataframe.iloc[10])
-    plt.show()
 
     return scaled_dataframe
 
