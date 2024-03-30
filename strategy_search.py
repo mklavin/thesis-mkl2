@@ -50,11 +50,17 @@ def put_together_preprocess_search(data, conc, region:str):
         df = pd.concat([df, conc], axis=1)
         df = pd.DataFrame(np.corrcoef(df.T)) # CALCULATING COVARIANCE MATRIX
 
-        # changed this for 150gg data on 3/16
+        # UNCOVER FOR 150GG DATA
         if region == '610':
             df = df.iloc[250:350]
         if region == '580':
             df = df.iloc[12:36]
+
+        # UNCOVER FOR 600GG DATA
+        # if region == '610':
+        #     df = df.iloc[730:851]
+        # if region == '580':
+        #     df = df.iloc[140:160]
 
         sorted_df = df.sort_values(by=359, ascending=False) # only select the column that corresponds to concentrations
         sorted_df = sorted_df[[359]].iloc[1:]
@@ -105,6 +111,7 @@ def polynomial_search(df, conc):
             baseline_removed = pd.concat([baseline_removed, conc], axis=1)
             baseline_removed = pd.DataFrame(np.corrcoef(baseline_removed.T))
 
+            # use 1338 for 600 gg data, 359 for 150 gg data
             sorted_df = baseline_removed.sort_values(by=359, ascending=False)
             sorted_df = sorted_df[[359]].iloc[1:]
             polyorders.append(max(sorted_df[359]))
@@ -156,21 +163,27 @@ def baseline_search(df, conc, region):
             row = row.reshape(1, -1)
             normalized_df = pd.DataFrame(row, columns=rowy.index)
             baseline_removed.append(normalized_df)
-
         baseline_removed = pd.concat(baseline_removed, axis=0, ignore_index=True)
         baseline_removed = pd.concat([baseline_removed, conc], axis=1)
         baseline_removed = pd.DataFrame(np.corrcoef(baseline_removed.T))
 
+        # UNCOVER FOR 150GG DATA
         if region == '610':
             baseline_removed = baseline_removed.iloc[250:350]
         if region == '580':
             baseline_removed = baseline_removed.iloc[12:36]
 
+        # UNCOVER FOR 600GG DATA
+        # if region == '610':
+        #     baseline_removed = baseline_removed.iloc[730:851]
+        # if region == '580':
+        #     baseline_removed = baseline_removed.iloc[140:160]
+
         # Add an index column
         # baseline_removed.reset_index(inplace=True)
 
         # Sort column 'A' in ascending order while preserving the index
-        sorted_df = baseline_removed.sort_values(by=359, ascending=False)
+        sorted_df = baseline_removed.sort_values(by=359, ascending=False) # change to 1338 for 600 gg data, 359 for 150 gg data
         sorted_df = sorted_df[[359]].iloc[1:]
         results.append(max(sorted_df[359]))
 
@@ -184,12 +197,9 @@ if __name__ == '__main__':
     df = pd.read_csv('data/raman_580.csv')
     df2 = pd.read_csv('data/150gg_data_cropped.csv')
     conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
-    conc2 = pd.read_csv('data/GSH_conc_150gg_data.csv')
+    conc2 = pd.read_csv('data/GSSG_conc_150gg_data.csv')
 
 
-    df = put_together_preprocess_search(df2, conc2, '610')
-    df.to_csv('data/150gg_data_prepro.csv', index=False)
-
-    # why is the covariance high but the models perform poorly?
+    df = put_together_preprocess_search(df2, conc2, '580')
 
 

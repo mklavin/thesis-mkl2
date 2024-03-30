@@ -6,52 +6,21 @@ import math
 from preprocessing import PCA1
 from sklearn import decomposition
 
-# functions used for organizing raw Raman data files
+"""
+functions used for organizing raw Raman data files
+very useful and more efficient than manual data organization
+"""
 
-def combine_data():
-    # used to combine daniels raman data and my raman data
-    daniels580 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_580.csv')
-    daniels610 = pd.read_csv('data/12_20_2023_newdata/new_12_20_data_610.csv')
-
-    data580 = pd.read_csv('data/old data 2-16-2024/data_580.csv')
-    data610 = pd.read_csv('data/old data 2-16-2024/data_610.csv')
-
-    conc610 = pd.read_csv('data/old data 2-16-2024/data_610_concentrations_GSH.csv')
-    conc580 = pd.read_csv('data/old data 2-16-2024/data_580_concentrations_GSSG.csv')
-
-    names580 = pd.read_csv('data/old data 2-16-2024/data_580_names.csv')
-    names610 = pd.read_csv('data/old data 2-16-2024/data_610_names.csv')
-
-    conc610 = pd.concat([conc610['conc_GSH'], daniels610['conc_GSH']])
-    conc580 = pd.concat([conc580['conc_GSSG'], daniels580['conc_GSSG']])
-
-    names610 = pd.concat([names610['names'], daniels610['names']])
-    names580 = pd.concat([names580['names'], daniels580['names']])
-
-    conc580.to_csv('data/raman_580_concentrations_GSSG.csv', index=False)
-    conc610.to_csv('data/raman_610_concentrations_GSH.csv', index=False)
-    names580.to_csv('data/raman_580_names.csv', index=False)
-    names610.to_csv('data/raman_610_names.csv', index=False)
-
-    daniels610 = daniels610.drop(columns=['conc_GSH', 'names', '563'])
-    daniels580 = daniels580.drop(columns=['conc_GSSG', 'names', '563'])
-    daniels610 = pd.concat([data610, daniels610])
-    daniels580 = pd.concat([data580, daniels580])
-    daniels580.to_csv('data/raman_580.csv', index=False)
-    daniels610.to_csv('data/raman_610.csv', index=False)
-
-    return None
-
-def separate_bysol(df):
+def separate_by_solvent(df):
     """
-    used to find the indices of each solvent
+    used to find the indices of each solvent based on spectral file names
     :param df: dataframe with a column of spectral names
     :return: dataframe with columns named by solvents where rows are indices of spectra
     of a particular solvent from the input df
     """
 
     # Define the substrings to search for
-    substrings = ['BSA', 'PEG', 'phos']
+    substrings = ['BSA', 'PEG', 'phos'] # can change this!
 
     # Initialize a dictionary to store the column values
     result_dict = {substring: [] for substring in substrings}
@@ -79,11 +48,12 @@ def separate_bysol(df):
     # Convert the dictionary to a DataFrame
     result_df = pd.DataFrame(result_dict)
 
-    # result_df.to_csv('data/separate_by_sol_580.csv', index=False)
+    # result_df.to_csv('data/separate_by_sol_580.csv', index=False) # uncover to save to csv
     return result_df
 
 
 def is_nan_string(string):
+    # helper function
     try:
         # Attempt to convert the string to a float
         value = float(string)
@@ -150,11 +120,17 @@ def stitch_spectra(spec_580, spec_610):
 
     return newdata
 
-def gather_data():
-    # loops through all of the raw data files in data and converts to one csv file
-    # also makes files with the name of data and labels
+def gather_data(folder_path): # very useful function :)
+    """
+    when given a path to a folder containing raw data,
+    makes a dataframe containing all of the spectra as rows.
+    also adds columns for concentrations and file names.
+    the last few lines are modified for 150gg data, but can be
+    easily adjusted for 580 and 610 data.
+    :param folder_path: string specifying directory to pull files
+    :return: dataframe with raw spectral data in addition to name and concentration columns
+    """
 
-    folder_path = 'data/March 7 Data Collection'  # filepath to folder of data
     n = 1340  # length of spectra
     columns = [i for i in range(1, n)]  # create list of same length
     data = pd.DataFrame(columns=columns)  # empty dataframe with columns for each value
@@ -179,53 +155,60 @@ def gather_data():
     data = data[['conc_GSH'] + [col for col in data.columns if col != 'conc_GSH']]
     data = data[['conc_GSSG'] + [col for col in data.columns if col != 'conc_GSSG']]
 
-    contains_580 = data[data['names'].str.contains('150gg')] #data[data['names'].str.contains('580')]
+    contains_580 = data[data['names'].str.contains('150gg')] #data[data['names'].str.contains('580')] # replace with this for 580 data
     contains_610 = data[data['names'].str.contains('610')]
 
-    #contains_580 = contains_580.drop(columns=['conc_GSH', 563])
+    #contains_580 = contains_580.drop(columns=['conc_GSH', 563]) # remove pixel 563
     #contains_610 = contains_610.drop(columns=['names', 'conc_GSSG'])
 
     return contains_580#, contains_610
 
-def drop_missingvals(spectra):
-    # raman spectrometer is missing a pixel at the 563rd position
-    spectra = spectra.drop(columns='563')
-    return spectra
+def drop_missingvals(df):
+    """
+    our raman spec is missing a pixel at the 563rd position.
+    drop that column!
+    :param spectra: df containing all spectra
+    :return: same dataframe, except col 563 is dropped
+    """
+    df = df.drop(columns='563')
+    return df
 
 def is_nan_string(value):
+    # helper function
     return value != value  # Check if the value is NaN
 
-def sort_usingsol_index(df, df2, key):
+def sort_usingsol_index(data, separate_by_sol, key):
     """
-    :param df: dataframe of all data
-    :param df2: dataframe containing indices of different solvents
+    generates dataframes with specified solvents only
+    use the sepearate_by_solvent() function!
+    :param data: dataframe of all data
+    :param separate_by_sol: dataframe containing indices of different solvents
+    this dataframe can be generated by the separate_by_solvent() function!
     :param key: which solvent to search for
     :return: dataframe of samples in specified solvent
     """
     result = pd.DataFrame()
-    for i in df[key]:
+    for i in data[key]:
         if is_nan_string(i):
             continue  # Skip NaN values
         i = int(i)
-        if i >= len(df2):
+        if i >= len(separate_by_sol):
             continue  # Skip if the index is out of bounds
-        row = df2.iloc[i]
+        row = separate_by_sol.iloc[i]
         row = pd.DataFrame([row])
         result = pd.concat([result, row], ignore_index=True)
-    return result
 
-def cut_spectra(df, region=str):
-    if region == '580':
-        start = 26
-        end = 213
-    if region == '610':
-        start = 669
-        end = 834
+    return result # dataframe of a particular solvent
 
-    return df.iloc[:, start:end]
-
-def select_corr_points(df, corr):
-    # used to select for correlated points of a certain value
+def select_corr_points(df, corr, n):
+    """
+    useful for correlation analysis. can give columns above a certain threshold (n) for
+    covariance to concentration.
+    :param df: dataframe containing spectra
+    :param corr: covaraince matrix
+    :param n: covariance threshold to sort by (ex: 0.5)
+    :return: dataframe containing spectral columns that are a specified covariance to concentration
+    """
 
     # Initialize an empty list to store DataFrames
     selected_rows = []
@@ -233,43 +216,29 @@ def select_corr_points(df, corr):
     # Transpose the original DataFrame
     df = df.T
 
-    # Remove rows where values in column 'A' are less than 0.5
-    corr = corr[corr['1338'] >= 0.5]
+    # Remove rows where values in column 'A' are less than
+    corr = corr[corr['359'] >= .7]  # change this if you want to do a different column
+    corr = corr.sort_values(by='359')
 
     # Loop through the indices in 'corr'
     for i in corr['index']:
         # Check if the index is within the valid range of 'df'
-        if i < len(df):
-            row = df.iloc[i]
+        if int(i)-524 < len(df):
+            row = df.iloc[int(i)-524]
             selected_rows.append(row)
 
     # Concatenate the selected rows into a new DataFrame
     final_df = pd.concat(selected_rows, axis=1).T
 
-    return final_df.T
-
-def get_concentration_BSA(absp, pathlength):
-    # beers law, use this function during sample prep to get the correct concentration of BSA (0.6 mM)
-    x = absp/(43824*pathlength)*1000
-    print('concentration of BSA:', x, 'mM')
-    return None
-
-def remove_pixel(df):
-    df = df.drop(columns=['563'], axis=1)
-    df.to_csv('data/new_data_610.csv', index=False)
-    return None
-
-def check_rows_in_dataframe(dataframe1, dataframe2): # written by chatGPT
-    # Convert DataFrames to sets for efficient comparison
-    set_dataframe1 = set(map(tuple, dataframe1.values))
-    set_dataframe2 = set(map(tuple, dataframe2.values))
-
-    # Check if any rows of dataframe1 are in dataframe2
-    rows_in_dataframe2 = set_dataframe1.intersection(set_dataframe2)
-
-    return len(rows_in_dataframe2)
+    return corr # can also change this to: final_df.T to get columns of a certain correlation
 
 def reorder_rows(df, indices):
+    """
+    if raman spectra are flipped, use this function
+    :param df: dataframe of spectral data
+    :param indices: row indices to flip
+    :return: dataframe of spectral data with specified columns flipped
+    """
     newdf = df.copy()
 
     for i in indices:
@@ -277,18 +246,16 @@ def reorder_rows(df, indices):
 
     return newdf
 
-def remove_index_column(filepath):
-    df = pd.read_csv(filepath)
-
-    df = df.drop(columns=['index'])
-
-    df.to_csv(filepath, index=False)
-
 if __name__ == '__main__':
-    df = pd.read_csv('data/March 7 Data Collection/150gg_data.csv')
-    df2 = pd.read_csv('data/names_150gg_data.csv')
+    df = pd.read_csv('data/150gg_data_prepro.csv')
+    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH.csv')
 
-    exit()
+    corr = pd.concat([corr['359'], pd.DataFrame(df.columns, columns=['index'])], axis=1)
+
+    corr = corr.drop([359])
+    print(corr)
+
+    print(select_corr_points(df, corr, .8))
 
 
 

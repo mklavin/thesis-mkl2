@@ -58,18 +58,25 @@ def gradients(matrix, W, H, learning_rate, epochs):
     return W, H
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_prepro.csv')
-
+    df = pd.read_csv('data/150gg_data_scaled_only.csv')
     U, sig, V = np.linalg.svd(df)
 
-    W, H = NMF(np.array(df.T), .001, 100000, 15)
-
-    print(len(W[:, 0]))
-    print(H.shape)
+    W, H = NMF(np.array(df.T), .000101, 100000, 16)
 
     plt.plot(W[:, 0])
-    plt.plot(W[:, 1])
-    plt.plot(W[:, 2])
-    plt.plot(W[:, 3])
+    plt.plot(W[:, 1]+5)
+    plt.plot(W[:, 2]+10)
+    plt.plot(W[:, 3]+15)
+    plt.plot(W[:, 4]+20)
+    plt.plot(W[:, 5]+25)
+    plt.plot(W[:, 6]+30)
+    plt.plot(W[:, 7]+35)
+    plt.plot(W[:, 8] +40)
+    plt.plot(W[:, 9] + 45)
+    plt.plot(W[:, 10] + 50)
+    plt.plot(W[:, 11] + 55)
+    plt.plot(W[:, 12] + 60)
+    plt.plot(W[:, 13] + 65)
+    plt.plot(W[:, 14] + 70)
     plt.show()
 

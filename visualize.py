@@ -253,18 +253,18 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     # Define colors for each line
     colors = ['blue', 'green', 'red']
 
-    x = np.arange(400, len(BSA)+400)
+    x = np.arange(400, 3000, 2600/len(BSA))
 
     # Plot each spectrum with a specific color
-    plt.plot(BSA, label='BSA', color=colors[0])
-    plt.plot(PEG, label='PEG', color=colors[1])
-    plt.plot(phos, label='phos', color=colors[2])
+    plt.plot(x, BSA, label='1', color=colors[0])
+    plt.plot(x, PEG, label='2', color=colors[1])
+    plt.plot(x, phos, label='3', color=colors[2])
 
     plt.gcf().set_size_inches(10, 5)
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12)
-    plt.ylabel('Intensity', fontsize = 12)
+    plt.ylabel('Normalized Intensity', fontsize = 12)
     plt.title('Solvent Comparison of Raman Spectra', fontsize = 12)
 
     # Customize ticks and labels
@@ -272,15 +272,15 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
     # Set x-axis ticks to display integers
-    x_ticks_positions = np.arange(400, 2800, 300)
-    x_ticks_labels = np.arange(400, 2800, 300)  # [str(int(pos)) for pos in x_ticks_positions]
+    x_ticks_positions = np.arange(400, 3000, 100)
+    x_ticks_labels = np.arange(400, 3000, 100)  # [str(int(pos)) for pos in x_ticks_positions]
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
     plt.legend()
 
     # Save figure
-    plt.savefig('solvent_comparison.png', dpi=1200, bbox_inches='tight')
+    #plt.savefig('solvent_comparison.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
@@ -509,8 +509,6 @@ def simple_plot(df, df1, df2, df3):
     # Define colors for each line
     colors = ['blue', 'green', 'red', 'purple']
 
-    x = np.arange(400, 2800, 10.29)
-
     # Plot each spectrum with a specific color and label
     plt.plot(np.arange(400, 2800, 7.73), df, color=colors[0], label='Water')
     plt.plot(np.arange(400, 2800, 7.73), df1, color=colors[1], label='Phosphate')
@@ -549,7 +547,7 @@ def plot_correlated_points(corr, spec):
     ypoints = []
 
     for i in range(len(corr)):
-        if corr.iloc[i]['153'] > 0.7:
+        if corr.iloc[i]['359'] > 0.7:
             xpoints.append(corr.iloc[i]['point'])
             point = corr.iloc[i]['point']
             ypoints.append(corr.iloc[0][int(point)])
@@ -621,7 +619,7 @@ def sort_clustering_labels(labels):
     return label_lists
 
 def plot_data_with_colors(dictionary, data):
-    colors = ['red', 'blue', 'green', 'purple', 'orange', 'pink']  # You can extend this list for more colors
+    colors = ['red', 'blue', 'green', 'purple', 'orange']  # You can extend this list for more colors
 
     # Create a dictionary to map data points to their respective colors
     data_color_mapping = {}
@@ -633,27 +631,64 @@ def plot_data_with_colors(dictionary, data):
     # Sort the data points to ensure they are connected in the correct order
     sorted_data_points = sorted(data_color_mapping.keys())
 
+    x_vals = np.arange(350, 3070, 2720/359)
+
+    plt.plot(1400, 0, label='Cluster 1', color='red')
+    plt.plot(1400, 0, label='Cluster 2', color='blue')
+    plt.plot(1400, 0, label='Cluster 3', color='green')
+    plt.plot(1400, 0, label='Cluster 4', color='purple')
+    plt.plot(1400, 0, label='Cluster 5', color='orange')
+
     # Plot the data points with lines connecting them
     for i in range(len(sorted_data_points) - 1):
         start_point = sorted_data_points[i]
         end_point = sorted_data_points[i + 1]
 
-        plt.plot([start_point, end_point], [data[start_point], data[end_point]], color=data_color_mapping[start_point])
+        plt.plot([x_vals[i], x_vals[i+1]], [data[start_point], data[end_point]], color=data_color_mapping[start_point])
+
+
+    # Set x-axis ticks to display integers
+    x_ticks_positions = np.arange(350, 3070, 350)
+    x_ticks_labels = np.arange(350, 3070, 350)  # [str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    plt.title('Clustering Analysis on the Covariance Matrix', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+
+    plt.legend()
+
+    plt.savefig('plots/results section plots/clustering_analysis_GSH.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
 
+def cluster(df):
+    # Visualize the synthetic data
+    plt.scatter(df['Feature1'], df['Feature2'], s=50, cmap='viridis')
+    plt.title('Synthetic Data with Three Clusters')
+    plt.xlabel('Feature1')
+    plt.ylabel('Feature2')
+    plt.show()
+
+    # Apply k-means clustering with k=3 (number of clusters)
+    kmeans = KMeans(n_clusters=3, random_state=42)
+    df['Cluster'] = kmeans.fit_predict(df)
+
+    # Visualize the clusters
+    plt.scatter(df['Feature1'], df['Feature2'], c=df['Cluster'], s=50, cmap='viridis')
+    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], c='red', marker='X', s=200, label='Centroids')
+    plt.title('Clusters Identified by K-Means')
+    plt.xlabel('Feature1')
+    plt.ylabel('Feature2')
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
-    df = pd.read_csv('data/raman_580.csv')
-    df2 = pd.read_csv('data/correlation analysis/peg_prepro_corr_matrix_580.csv')
+    df = pd.read_csv('data/150gg_data_cropped.csv')
+    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH.csv')
 
-
-
-    x = plot_and_cluster_kmeans(df2, 4)
-    labels = sort_clustering_labels(x)
-    plot_data_with_colors(labels, df.iloc[1])
-
-
+    plot_correlated_points(corr, df.iloc[0])
 
     exit()
     # PCA1 vs PCA2

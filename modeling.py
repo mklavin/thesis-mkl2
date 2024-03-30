@@ -13,21 +13,30 @@ from sklearn.model_selection import GridSearchCV
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.cluster import KMeans
 
-def find_data_onbadspec(listy, x, y, names):
+"""
+Machine Learning!!!!
+
+where the magic happens. 
+"""
+
+def find_data_onbadspec(bad_spec, x, y, names):
     """
+    can be called in the last line of the evaluate_with_models() function
+    finds indices of spectra with really high MAE's
     :param listy: list of spectra that returned error specified by if statement
     :param x: original features
     :param y: original labels
     :param names: names of the spectra in x
-    :return: print the indices, concentrations, and
+    :return: print the indices, concentrations, and names of spectra above a certain error
     """
     x = np.array(x)
     y = np.array(y)
+
     indices = []
     conc = []
     namey = []
-    for i in range(len(listy)):
-        row_index = np.where(np.all(x == listy[i], axis=1))[0]
+    for i in range(len(bad_spec)):
+        row_index = np.where(np.all(x == bad_spec[i], axis=1))[0]
         indices.append(row_index)
         conc.append((y[row_index]))
         namey.append(names.iloc[row_index])
@@ -37,9 +46,17 @@ def find_data_onbadspec(listy, x, y, names):
     return None
 
 def evaluate_withmodels(x, y, names, n):
-    # x = x.drop([10])
-    # y = y.drop([10])
-    # names = names.drop([10])
+    """
+    tests different ML models with the given x and y data. prints the MAE for each model.
+    explore this function, because there's a lot that can be changed!
+    can save models as .pkl files, change number of iterations, change train/test split,
+    get data on bad spec, etc.
+    :param x: features as a dataframe where each row is a spectra
+    :param y: labels as a dataframe column
+    :param names: used for semi-random train test split function. names of raman spec
+    :param n: test size (ex: 0.15)
+    :return: predicted concentrationvalues
+    """
 
     # models:
     RF = RandomForestRegressor()
@@ -49,8 +66,8 @@ def evaluate_withmodels(x, y, names, n):
     KR = KernelRidge()
     KNN = KNeighborsRegressor()
     LR = LinearRegression()
-    #HGBR = HistGradientBoostingRegressor(max_leaf_nodes=100)
-    models = [RF, SVM, MLP, KR, KNN, LR]
+
+    models = [RF, SVM, MLP, KR, KNN, LR] # models that are evaluated
 
     badspec = []
     results = []
@@ -58,31 +75,30 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 3:
-            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=n) #new_trainingandtestsplit(x, y, names, n)
+        while i < 3: # number of iterations- can be changed
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=n) #split_by_concentration(x, y, names, n) # change this to split based on names
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
             y_pred = np.maximum(y_pred, 0)
-            # mae = mean_absolute_percentage_error(list(y_test['conc_GSH'].replace(0, 1)), y_pred)
 
             for i in range(len(y_pred)):
                 try:
-                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 1:
+                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 1: # for analyzing which spec are giving high errors
                         badspec.append(list(x_test.iloc[i]))
                 except TypeError:
-                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 1:
+                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 1: # change to whatever threshold!
                         badspec.append(list(x_test.iloc[i]))
 
             mae = mean_absolute_error(y_test, y_pred)
             listy.append(mae)
             i += 1
-        # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl')
+        # joblib.dump(model,'models/GBRT_cut_data_wconc_allsol_580_BR_NM_10com.pkl') # uncover to save model
         results.append([j,'MAE:', np.average(listy)])
         print(results)
     return y_pred #find_data_onbadspec(badspec, x, y, names) # can change this arg- right now it finds which spectra have the highest errors
 
 
-def new_trainingandtestsplit(x, y, names, split):
+def split_by_concentration(x, y, names, split):
     # makes a training and test split that has an even amount of PEG, BSA, and phos solvent samples
     # sorts them by names
     def categorize_row(row):
@@ -287,32 +303,11 @@ def reduce_components(df):
 
     return df
 
-def cluster(df):
-
-    # Visualize the synthetic data
-    plt.scatter(df['Feature1'], df['Feature2'], s=50, cmap='viridis')
-    plt.title('Synthetic Data with Three Clusters')
-    plt.xlabel('Feature1')
-    plt.ylabel('Feature2')
-    plt.show()
-
-    # Apply k-means clustering with k=3 (number of clusters)
-    kmeans = KMeans(n_clusters=3, random_state=42)
-    df['Cluster'] = kmeans.fit_predict(df)
-
-    # Visualize the clusters
-    plt.scatter(df['Feature1'], df['Feature2'], c=df['Cluster'], s=50, cmap='viridis')
-    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], c='red', marker='X', s=200, label='Centroids')
-    plt.title('Clusters Identified by K-Means')
-    plt.xlabel('Feature1')
-    plt.ylabel('Feature2')
-    plt.legend()
-    plt.show()
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/150gg_data_prepro.csv')
-    y1 = pd.read_csv('data/GSSG_conc_150gg_data.csv')
-    names = pd.read_csv('data/names_150gg_data.csv')
+    y1 = pd.read_csv('data/peg_prepro_610_concentrations_GSH.csv')
+    x1 = pd.read_csv('data/peg_prepro_610.csv')
+    names = pd.read_csv('data/raman_580_names.csv')
     df = pd.read_csv('data/correlation analysis/prepro_corr_points_580.csv')
 
     evaluate_withmodels(x1, y1, names, .15)

@@ -9,8 +9,9 @@ import numpy as np
 """
 ALL PREPROCESSING METHODS
 
-contains functions for standardizing spectra, normalizing, 
-baseline removal, PCA, spectral smoothing
+- contains functions for standardizing spectra, normalizing, 
+  baseline removal, PCA, spectral smoothing
+- these functions are generally not utilized directly- mainly used in the strategy_search.py file
 """
 
 def standardize_byscalar(spectra, scalar):
@@ -26,6 +27,30 @@ def standardize_byscalar(spectra, scalar):
     # plt.plot(np.linspace(0, len(spectra), len(spectra)), spectra_scaled)
     # plt.show()
     return spectra_scaled
+
+def integrate_dataframe(df, increment_size=10):
+    integrated_df = pd.DataFrame()
+
+    # Iterate over each row in the DataFrame
+    for index, row in df.iterrows():
+        y_values = row.values  # Extract y values from the row
+
+        # Calculate the number of increments
+        num_increments = len(y_values) // increment_size
+
+        # Initialize a new vector for the integrated values
+        integrated_values = np.zeros(num_increments)
+
+        # Integrate each increment of specified size
+        for i in range(num_increments):
+            start_index = i * increment_size
+            end_index = (i + 1) * increment_size
+            integrated_values[i] = np.trapz(y_values[start_index:end_index])
+
+        # Create a new DataFrame with the integrated values for the current row
+        integrated_df = pd.concat([integrated_df, pd.DataFrame(integrated_values).transpose()], ignore_index=True)
+
+    return integrated_df
 
 def PCA1(data, n):
     """
@@ -169,22 +194,24 @@ def remove_baseline(spectra, baseline_func, order=None):
 
     return baselined_spectra
 
-def calc_correlation_matrix(df):
+def calc_correlation_matrix(df, conc):
     # return the correlation matrix of all points
 
-    # df = pd.concat([df, conc], axis=1) # if you want to append concentrations
+    df = pd.concat([df, conc], axis=1) # if you want to append concentrations
     correlation_matrix = pd.DataFrame(np.corrcoef(df.T))
 
     return correlation_matrix
 
 
-if __name__ == '__main__':
-    df = pd.read_csv('data/phos_prepro_580.csv')
-    glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
-    conc = pd.read_csv('data/old data 2-16-2024/phos_conc_610.csv')
-    names = pd.read_csv('data/daniels_data/danielmimi_data_580_names.csv')
 
-    scale_rows_to_max(df, '580')
+if __name__ == '__main__':
+    df = pd.read_csv('data/150gg_data_prepro.csv')
+    glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
+    conc = pd.read_csv('data/GSSG_conc_150gg_data.csv')
+    names = pd.read_csv('data/raw data/daniels_data/danielmimi_data_580_names.csv')
+
+    df = calc_correlation_matrix(df, conc)
+    df.to_csv('data/correlation analysis/150gg_data_prepro_GSSG.csv', index=False)
 
     exit()
 
