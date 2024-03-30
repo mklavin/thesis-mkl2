@@ -550,15 +550,25 @@ def plot_correlated_points(corr, spec):
         if corr.iloc[i]['359'] > 0.7:
             xpoints.append(corr.iloc[i]['point'])
             point = corr.iloc[i]['point']
-            ypoints.append(corr.iloc[0][int(point)])
+            ypoints.append(spec[int(point)])
 
     # Sort the x-points to ensure they are in ascending order
     sorted_indices = sorted(range(len(xpoints)), key=lambda k: xpoints[k])
-    xpoints = [xpoints[i] for i in sorted_indices]
+    xpoints = [np.arange(350, 3070, 7.58)[int(i)] for i in xpoints]
     ypoints = [ypoints[i] for i in sorted_indices]
 
-    plt.plot(spec.iloc[0], label='Line Plot')
-    plt.plot(xpoints, ypoints, 'ro', markersize=3, label='Points')
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.title('GSH and GSSH in Phosphate Buffer', fontsize=12)
+
+    x_ticks_positions = np.arange(350, 3070, 300)
+    x_ticks_labels = np.arange(350, 3070, 300)
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    plt.plot(np.arange(350, 3070, 7.58), spec, label='Glutathione in Phosphate')
+    plt.plot(xpoints, ypoints, 'ro', markersize=2, label='Points Correlated to GSH Concentration')
     plt.legend()
     plt.show()
 
@@ -686,20 +696,23 @@ def cluster(df):
 
 if __name__ == '__main__':
     df = pd.read_csv('data/150gg_data_cropped.csv')
-    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH.csv')
+    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH_col359.csv')
 
-    plot_correlated_points(corr, df.iloc[0])
+    # filepaths = ['data/150gg_data_cropped.csv', 'data/150gg_data_prepro.csv',
+    #              'data/names_150gg_data.csv', 'data/GSH_conc_150gg_data.csv',
+    #              'data/GSSG_conc_150gg_data.csv', 'data/150gg_data_scaled_only.csv']
+    #
+    # for i in filepaths:
+    #     df = pd.read_csv(i)
+    #     df = df.drop([59, 60, 61, 68, 69, 70, 71, 72, 73, 74, 75, 77, 79, 81, 83,
+    #                  84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 95, 96, 97, 98, 99])
+    #     df.to_csv(i, index=False)
+    # new = pd.concat([corr['359'], pd.DataFrame(corr.columns)], axis=1)
+    # new.to_csv('data/correlation analysis/150gg_data_prepro_GSH_col359.csv', index=False)
+    # exit()
+    plot_correlated_points(corr, df.iloc[3])
 
     exit()
     # PCA1 vs PCA2
-    data, ratio = PCA1(data2, 5)
-    print(ratio)
 
-    bsadf = separate_by_sol_andplot(data, soldata['BSA'])
-    pegdf = separate_by_sol_andplot(data, soldata['PEG'])
-    phosdf = separate_by_sol_andplot(data, soldata['phos'])
-    plt.scatter(bsadf[0], bsadf[1], c='g')
-    plt.scatter(pegdf[0], pegdf[1])
-    plt.scatter(phosdf[0], phosdf[1])
-    plt.show()
 
