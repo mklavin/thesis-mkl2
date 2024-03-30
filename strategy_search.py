@@ -197,9 +197,10 @@ if __name__ == '__main__':
     df = pd.read_csv('data/raman_580.csv')
     df2 = pd.read_csv('data/150gg_data_cropped.csv')
     conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
-    conc2 = pd.read_csv('data/GSSG_conc_150gg_data.csv')
+    conc2 = pd.read_csv('data/GSH_conc_150gg_data.csv')
 
 
-    df = put_together_preprocess_search(df2, conc2, '580')
+    df = put_together_preprocess_search(df2, conc2, '610')
+    df.to_csv('data/150gg_data_prepro_GSH.csv', index=False)
 
 

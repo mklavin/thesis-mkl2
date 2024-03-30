@@ -75,7 +75,7 @@ def evaluate_withmodels(x, y, names, n):
         model = j
         i = 0
         listy = []
-        while i < 3: # number of iterations- can be changed
+        while i < 10: # number of iterations- can be changed
             x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=n) #split_by_concentration(x, y, names, n) # change this to split based on names
             model.fit(x_train, y_train)
             y_pred = model.predict(x_test)
@@ -305,12 +305,12 @@ def reduce_components(df):
 
 
 if __name__ == '__main__':
-    y1 = pd.read_csv('data/peg_prepro_610_concentrations_GSH.csv')
-    x1 = pd.read_csv('data/peg_prepro_610.csv')
+    x1 = pd.read_csv('data/150gg_data_prepro_GSH.csv')
+    y1 = pd.read_csv('data/GSH_conc_150gg_data.csv')
     names = pd.read_csv('data/raman_580_names.csv')
     df = pd.read_csv('data/correlation analysis/prepro_corr_points_580.csv')
 
-    evaluate_withmodels(x1, y1, names, .15)
+    evaluate_withmodels(x1, y1, names, .2)
     exit()
 
 

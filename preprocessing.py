@@ -205,7 +205,7 @@ def calc_correlation_matrix(df, conc):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_prepro.csv')
+    df = pd.read_csv('data/150gg_data_prepro_GSSG.csv')
     glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
     conc = pd.read_csv('data/GSSG_conc_150gg_data.csv')
     names = pd.read_csv('data/raw data/daniels_data/danielmimi_data_580_names.csv')

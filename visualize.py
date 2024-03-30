@@ -713,6 +713,5 @@ if __name__ == '__main__':
     plot_correlated_points(corr, df.iloc[3])
 
     exit()
-    # PCA1 vs PCA2
 
 
