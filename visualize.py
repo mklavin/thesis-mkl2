@@ -542,34 +542,37 @@ def simple_plot(df, df1, df2, df3):
 
     return None
 
-def plot_correlated_points(corr, spec):
+def plot_correlated_points(corr, spec, threshold):
     xpoints = []
     ypoints = []
 
     for i in range(len(corr)):
-        if corr.iloc[i]['359'] > 0.7:
+        if corr.iloc[i]['359'] > threshold:
             xpoints.append(corr.iloc[i]['point'])
             point = corr.iloc[i]['point']
             ypoints.append(spec[int(point)])
 
     # Sort the x-points to ensure they are in ascending order
     sorted_indices = sorted(range(len(xpoints)), key=lambda k: xpoints[k])
-    xpoints = [np.arange(350, 3070, 7.58)[int(i)] for i in xpoints]
+    xpoints = [np.arange(0, 358)[int(i)] for i in xpoints] # np.arange(350, 3070, 7.58)
     ypoints = [ypoints[i] for i in sorted_indices]
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
     plt.ylabel('Intensity', fontsize=12)
-    plt.title('GSH and GSSH in Phosphate Buffer', fontsize=12)
+    plt.title('GSSG in Phosphate Buffer', fontsize=12)
 
-    x_ticks_positions = np.arange(350, 3070, 300)
-    x_ticks_labels = np.arange(350, 3070, 300)
-    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)  # X-axis tick font size
+    # x_ticks_positions = np.arange(350, 3070, 50)
+    # x_ticks_labels = np.arange(350, 3070, 50)
+    # plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)  # X-axis tick font size
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
-    plt.plot(np.arange(350, 3070, 7.58), spec, label='Glutathione in Phosphate')
-    plt.plot(xpoints, ypoints, 'ro', markersize=2, label='Points Correlated to GSH Concentration')
+    plt.plot(np.arange(0, 359), spec, label='Glutathione in Phosphate') # x = np.arange(350, 3070, 7.58),
+    plt.plot(xpoints, ypoints, 'ro', markersize=2, label='Points Correlated to GSSG Concentration')
     plt.legend()
+
+    # plt.savefig('plots/results section plots/points_correlated_to_GSSG.png', dpi=1200, bbox_inches='tight')
+
     plt.show()
 
 def make_glu_peak_comparison_plot(BSA, PEG, phos):
@@ -668,7 +671,7 @@ def plot_data_with_colors(dictionary, data):
 
     plt.legend()
 
-    plt.savefig('plots/results section plots/clustering_analysis_GSH.png', dpi=1200, bbox_inches='tight')
+    plt.savefig('plots/results section plots/points_corr_to_GSH.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
@@ -694,23 +697,37 @@ def cluster(df):
     plt.legend()
     plt.show()
 
+def plot_peak_comparison(df, rows):
+
+    # Add labels and title
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.title('GSH in Phosphate Buffer', fontsize=12)
+
+    x_ticks_positions = np.arange(400, 3120, 50)
+    x_ticks_labels = np.arange(400, 3120, 50)
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)  # X-axis tick font size
+    plt.yticks(fontsize=12)  # Y-axis tick font size
+
+    for i in rows:
+        plt.plot(np.arange(400, 3120, 7.58), df.iloc[i], label='Points Correlated to GSSG Concentration')
+    plt.legend()
+
+    # plt.savefig('plots/results section plots/points_correlated_to_GSSG.png', dpi=1200, bbox_inches='tight')
+
+    plt.show()
+
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_cropped.csv')
+    df = pd.read_csv('data/150gg_data_prepro_GSH.csv')
     corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH_col359.csv')
 
-    # filepaths = ['data/150gg_data_cropped.csv', 'data/150gg_data_prepro.csv',
-    #              'data/names_150gg_data.csv', 'data/GSH_conc_150gg_data.csv',
-    #              'data/GSSG_conc_150gg_data.csv', 'data/150gg_data_scaled_only.csv']
-    #
-    # for i in filepaths:
-    #     df = pd.read_csv(i)
-    #     df = df.drop([59, 60, 61, 68, 69, 70, 71, 72, 73, 74, 75, 77, 79, 81, 83,
-    #                  84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 95, 96, 97, 98, 99])
-    #     df.to_csv(i, index=False)
+    plot_peak_comparison(df, [0, 1, 10, 69])
+
+
     # new = pd.concat([corr['359'], pd.DataFrame(corr.columns)], axis=1)
     # new.to_csv('data/correlation analysis/150gg_data_prepro_GSH_col359.csv', index=False)
     # exit()
-    plot_correlated_points(corr, df.iloc[3])
+    # plot_correlated_points(corr, df.iloc[55], .5)
 
     exit()
 
