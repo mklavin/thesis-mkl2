@@ -202,16 +202,49 @@ def calc_correlation_matrix(df, conc):
 
     return correlation_matrix
 
+def calc_covariance_at_dif_conc(df, conc, threshold):
+    """
+    calculates the covariance to concentration at varying concentrations,
+    specified by the given threshold
+    :param df: dataframe containing raman data, parameters specific to 600 gg data
+    :param conc: glutathione concentrations
+    :param threshold: cutoff for concentrations
+    :return: covariance of each point to concentration
+    """
+    condition = conc['conc'] > threshold # change for greater than or less than the threshold
+    conc = conc[condition]
+    indices_to_keep = conc.index
+
+    indices_to_remove = []
+    for i in range(len(df)):
+        if df.index[i] not in indices_to_keep:
+            indices_to_remove.append(df.index[i])
+
+    df = df.drop(indices_to_remove)
+
+    df = calc_correlation_matrix(df, conc)
+    df = df.sort_values(by=[1338], ascending=False)
+    df = df[1338]
+
+    df.to_csv('data/correlation analysis/Peak Maximum Analysis/corr_anal_610_30_100mM.csv')
+
+    return df
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_prepro_GSSG.csv')
+    df = pd.read_csv('data/raman_prepro_610.csv')
     glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
-    conc = pd.read_csv('data/GSSG_conc_150gg_data.csv')
+    conc = pd.read_csv('data/raman_610_concentrations_GSH.csv')
     names = pd.read_csv('data/raw data/daniels_data/danielmimi_data_580_names.csv')
 
+    calc_covariance_at_dif_conc(df, conc, 29)
+    exit()
+
     df = calc_correlation_matrix(df, conc)
-    df.to_csv('data/correlation analysis/150gg_data_prepro_GSSG.csv', index=False)
+    df =df.sort_values(by=[1338], ascending=False)
+    df =df[1338]
+
+    df.to_csv('data/correlation analysis/corr_anal_phos_610.csv')
 
     exit()
 

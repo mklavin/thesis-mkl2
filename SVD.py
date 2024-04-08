@@ -121,26 +121,46 @@ def eq_3(B, E, H):
 
     return np.dot(ans, H)
 
+def plot_W(W, k):
+
+    for i in range(k):
+        plt.plot(np.arange(350, 3070, 7.58), W[:, i] + i*8, label = f'Singular Value {i+1}')
+
+    # Set x-axis ticks to display integers
+    x_ticks_positions = np.arange(350, 3070, 350)
+    x_ticks_labels = np.arange(350, 3070, 350)  # [str(int(pos)) for pos in x_ticks_positions]
+    plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
+
+    plt.gcf().set_size_inches(12, 5)
+
+    plt.title('Raman Spectral Decomposition', fontsize=12)
+    plt.ylabel('Intensity', fontsize=12)
+    plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
+    plt.tick_params(left=False, right=False, labelleft=False,
+                    )
+
+    plt.legend()
+
+    plt.savefig('plots/results section plots/SVD.png', dpi=1200, bbox_inches='tight')
+
+    plt.show()
+
+
+
 if __name__ == '__main__':
     df = pd.read_csv('data/150gg_data_prepro_GSH.csv')
 
     U, E, Vt = svd(df.T)
     E = create_diagonal_matrix(E, U.shape[1])
 
-    W, H = NMF(np.array(df.T), .0002, 10000, 77)
+    W, H = NMF(np.array(df.T), .0002, 10000, 5)
+
+    plot_W(W, 5)
+    exit()
 
     B = eq2(U, W, .0001, 10000, 77)
 
     ans = eq_3(B, E, H)
-
-    plt.plot(ans[0])
-    plt.show()
-
-
-
-
-
-
 
     # plt.plot(W[:, 0])
     # plt.plot(W[:, 1]+5)

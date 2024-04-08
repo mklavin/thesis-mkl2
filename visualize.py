@@ -697,7 +697,7 @@ def cluster(df):
     plt.legend()
     plt.show()
 
-def plot_peak_comparison(df, rows):
+def plot_peak_comparison(df, rows, conc):
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize=12)
@@ -709,19 +709,31 @@ def plot_peak_comparison(df, rows):
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)  # X-axis tick font size
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
-    for i in rows:
-        plt.plot(np.arange(400, 3120, 7.58), df.iloc[i], label='Points Correlated to GSSG Concentration')
+    for i in range(len(rows)):
+        plt.plot(np.arange(400, 3120, 7.58), df.iloc[rows[i]], label=f'{conc[i]} mM GSH')
     plt.legend()
 
-    # plt.savefig('plots/results section plots/points_correlated_to_GSSG.png', dpi=1200, bbox_inches='tight')
+    plt.gcf().set_size_inches(8, 5)
+
+    # plt.xlim([2450, 2700])
+    # plt.ylim([-.8, 5])
+
+    plt.savefig('plots/results section plots/GSSG_peak_comparison.png', dpi=1200, bbox_inches='tight')
 
     plt.show()
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_prepro_GSH.csv')
-    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH_col359.csv')
+    df = pd.read_csv('data/raman_prepro_580.csv')
+    conc = pd.read_csv('data/GSH_conc_150gg_data.csv')
 
-    plot_peak_comparison(df, [0, 1, 10, 69])
+    plt.plot(df.iloc[12])
+    plt.plot(df.iloc[51])
+    plt.plot(df.iloc[77])
+    plt.plot(df.iloc[75])
+    plt.show()
+
+
+    #plot_peak_comparison(df, [10, 0, 1, 69], [2, 15, 30, 50])
 
 
     # new = pd.concat([corr['359'], pd.DataFrame(corr.columns)], axis=1)
