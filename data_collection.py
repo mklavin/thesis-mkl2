@@ -247,15 +247,24 @@ def reorder_rows(df, indices):
     return newdf
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/150gg_data_prepro.csv')
-    corr = pd.read_csv('data/correlation analysis/150gg_data_prepro_GSH.csv')
 
-    corr = pd.concat([corr['359'], pd.DataFrame(df.columns, columns=['index'])], axis=1)
+    df = pd.read_csv('data/apr13_data_collection.csv')
 
-    corr = corr.drop([359])
-    print(corr)
 
-    print(select_corr_points(df, corr, .8))
+    # df['conc_GSSG'].to_csv('data/apr13_conc_GSSG.csv', index=False)
+    # df['conc_GSH'].to_csv('data/apr13_conc_GSH.csv', index=False)
+    # df['names'].to_csv('data/apr13_names.csv', index=False)
+
+    df = df.drop(columns=['conc_GSSG', 'conc_GSH', 'names'])
+    df = reorder_rows(df, np.arange(0, len(df)))
+    df = df.drop(columns=['564'])
+    df = df.iloc[:, 523:882]
+    print(df)
+    plt.plot(df.iloc[34])
+    plt.show()
+
+    df.to_csv('data/apr13_data.csv', index=False)
+
 
 
 

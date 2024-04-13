@@ -33,6 +33,7 @@ def put_together_preprocess_search(data, conc, region:str):
     #     total_perm.append(all_permutations)
     # total_perm = [item for sublist in total_perm for item in sublist] # making a bigger list of permutations
     total_perm = list(permutations(options, 3))
+    total_perm = ['normalizing', 'baseline removal', 'standardize']
     results = []
     fits = []
 
@@ -146,6 +147,7 @@ def baseline_search(df, conc, region):
             pybaselines.classification.golotvin, pybaselines.classification.std_distribution, pybaselines.classification.fastchrom, pybaselines.classification.fabc,
             pybaselines.optimizers.optimize_extended_range, pybaselines.optimizers.adaptive_minmax, pybaselines.misc.beads,
             pybaselines.smooth.swima]
+    func = [pybaselines.spline.irsqr]
     results = []
 
     # polynomial fitting for baseline removal
@@ -194,13 +196,19 @@ def baseline_search(df, conc, region):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/raman_580.csv')
+    df = pd.read_csv('data/apr13_data.csv')
     df2 = pd.read_csv('data/150gg_data_cropped.csv')
-    conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
+    conc = pd.read_csv('data/apr13_conc_GSSG.csv')
     conc2 = pd.read_csv('data/GSH_conc_150gg_data.csv')
 
+    for i in range(len(df)):
+        plt.plot(df.iloc[i])
+        plt.show()
 
-    df = put_together_preprocess_search(df2, conc2, '610')
-    df.to_csv('data/150gg_data_prepro_GSH.csv', index=False)
+    # df = put_together_preprocess_search(df, conc, '610')
+    # plt.plot(df.iloc[33])
+    # plt.plot(df.iloc[34])
+    # plt.show()
+    #df.to_csv('data/apr13_data_prepro.csv', index=False)
 
 
