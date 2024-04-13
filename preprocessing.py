@@ -237,7 +237,7 @@ if __name__ == '__main__':
     conc = pd.read_csv('data/raman_610_concentrations_GSH.csv')
     names = pd.read_csv('data/raw data/daniels_data/danielmimi_data_580_names.csv')
 
-    calc_covariance_at_dif_conc(df, conc, 29)
+    print(np.median(conc['conc']))
     exit()
 
     df = calc_correlation_matrix(df, conc)

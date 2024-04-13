@@ -230,7 +230,7 @@ def plot_predicted_versus_test(y_pred, y_test):
     plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
 
     # Diagonal line for reference
-    plt.plot(np.arange(0, 90), np.arange(0, 90), color='red', linestyle='--', label='Ideal Line')
+    plt.plot(np.arange(0, 15), np.arange(0, 15), color='red', linestyle='--', label='Ideal Line')
 
     # Adding labels and title
     plt.xlabel('Predicted Values')
@@ -242,7 +242,7 @@ def plot_predicted_versus_test(y_pred, y_test):
 
     # Adding grid for better readability
     plt.grid(True)
-    plt.savefig('plots/phosphate_model.png')
+    plt.savefig('plots/GSSG_actual_vs_predicted.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
@@ -723,14 +723,14 @@ def plot_peak_comparison(df, rows, conc):
     plt.show()
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/raman_prepro_580.csv')
-    conc = pd.read_csv('data/GSH_conc_150gg_data.csv')
+    df = pd.read_csv('data/raman_580.csv')
+    conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
 
-    plt.plot(df.iloc[12])
-    plt.plot(df.iloc[51])
-    plt.plot(df.iloc[77])
-    plt.plot(df.iloc[75])
-    plt.show()
+    for i in range(100):
+        plt.plot(df.iloc[i])
+        plt.title(str(i))
+        plt.xlabel(str(conc.iloc[i]))
+        plt.show()
 
 
     #plot_peak_comparison(df, [10, 0, 1, 69], [2, 15, 30, 50])

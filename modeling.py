@@ -81,13 +81,13 @@ def evaluate_withmodels(x, y, names, n):
             y_pred = model.predict(x_test)
             y_pred = np.maximum(y_pred, 0)
 
-            for i in range(len(y_pred)):
+            for m in range(len(y_pred)):
                 try:
-                    if mean_absolute_error(y_test.iloc[i], y_pred[i]) > 1: # for analyzing which spec are giving high errors
-                        badspec.append(list(x_test.iloc[i]))
+                    if mean_absolute_error(y_test.iloc[m], y_pred[m]) > 1: # for analyzing which spec are giving high errors
+                        badspec.append(list(x_test.iloc[m]))
                 except TypeError:
-                    if mean_absolute_error(y_test.iloc[i], [y_pred[i]]) > 1: # change to whatever threshold!
-                        badspec.append(list(x_test.iloc[i]))
+                    if mean_absolute_error(y_test.iloc[m], [y_pred[m]]) > 1: # change to whatever threshold!
+                        badspec.append(list(x_test.iloc[m]))
 
             mae = mean_absolute_error(y_test, y_pred)
             listy.append(mae)
@@ -305,7 +305,7 @@ def reduce_components(df):
 
 
 if __name__ == '__main__':
-    x1 = pd.read_csv('data/150gg_data_prepro_GSH.csv')
+    x1 = pd.read_csv('data/integrated spectra/150gg_data_GSH_20.csv')
     y1 = pd.read_csv('data/GSH_conc_150gg_data.csv')
     names = pd.read_csv('data/raman_580_names.csv')
     df = pd.read_csv('data/correlation analysis/prepro_corr_points_580.csv')
