@@ -33,7 +33,7 @@ def put_together_preprocess_search(data, conc, region:str):
     #     total_perm.append(all_permutations)
     # total_perm = [item for sublist in total_perm for item in sublist] # making a bigger list of permutations
     total_perm = list(permutations(options, 3))
-    total_perm = ['normalizing', 'baseline removal', 'standardize']
+    total_perm = [['standardize', 'normalize']]
     results = []
     fits = []
 
@@ -201,14 +201,16 @@ if __name__ == '__main__':
     conc = pd.read_csv('data/apr13_conc_GSSG.csv')
     conc2 = pd.read_csv('data/GSH_conc_150gg_data.csv')
 
-    for i in range(len(df)):
-        plt.plot(df.iloc[i])
-        plt.show()
+    # for i in range(len(df)):
+    #     plt.plot(df.iloc[i])
+    #     plt.show()
 
-    # df = put_together_preprocess_search(df, conc, '610')
+    df = put_together_preprocess_search(df, conc, '610')
+    # plt.plot(df.iloc[4])
+    # plt.plot(df.iloc[6])
     # plt.plot(df.iloc[33])
-    # plt.plot(df.iloc[34])
+    # plt.plot(df.iloc[22])
     # plt.show()
-    #df.to_csv('data/apr13_data_prepro.csv', index=False)
+    df.to_csv('data/apr13_data_normalize_standardize.csv', index=False)
 
 

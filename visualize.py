@@ -256,15 +256,15 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     x = np.arange(400, 3000, 2600/len(BSA))
 
     # Plot each spectrum with a specific color
-    plt.plot(x, BSA, label='1', color=colors[0])
-    plt.plot(x, PEG, label='2', color=colors[1])
-    plt.plot(x, phos, label='3', color=colors[2])
+    plt.plot(x, BSA, label='BSA', color=colors[0])
+    plt.plot(x, PEG, label='PEG', color=colors[1])
+    plt.plot(x, phos, label='Phosphate', color=colors[2])
 
     plt.gcf().set_size_inches(10, 5)
 
     # Add labels and title
     plt.xlabel('Raman Shift (cm⁻¹)', fontsize = 12)
-    plt.ylabel('Normalized Intensity', fontsize = 12)
+    plt.ylabel('Intensity', fontsize = 12)
     plt.title('Solvent Comparison of Raman Spectra', fontsize = 12)
 
     # Customize ticks and labels
@@ -272,15 +272,15 @@ def make_solvent_comparison_plot(BSA, PEG, phos):
     plt.yticks(fontsize=12)  # Y-axis tick font size
 
     # Set x-axis ticks to display integers
-    x_ticks_positions = np.arange(400, 3000, 100)
-    x_ticks_labels = np.arange(400, 3000, 100)  # [str(int(pos)) for pos in x_ticks_positions]
+    x_ticks_positions = np.arange(400, 3000, 200)
+    x_ticks_labels = np.arange(400, 3000, 200)  # [str(int(pos)) for pos in x_ticks_positions]
     plt.xticks(x_ticks_positions, x_ticks_labels, fontsize=12)
 
     # Add legend
     plt.legend()
 
     # Save figure
-    #plt.savefig('solvent_comparison.png', dpi=1200, bbox_inches='tight')
+    plt.savefig('plots/results section plots/solvent_comparison_shiftedbaseline.png', dpi=1200, bbox_inches='tight')
 
     # Show the plot
     plt.show()
@@ -718,22 +718,17 @@ def plot_peak_comparison(df, rows, conc):
     # plt.xlim([2450, 2700])
     # plt.ylim([-.8, 5])
 
-    plt.savefig('plots/results section plots/GSSG_peak_comparison.png', dpi=1200, bbox_inches='tight')
+    # plt.savefig('plots/results section plots/GSH_peak_comparison.png', dpi=1200, bbox_inches='tight')
 
     plt.show()
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/raman_580.csv')
+    df = pd.read_csv('data/apr13_data_normalize_only.csv')
     conc = pd.read_csv('data/raman_580_concentrations_GSSG.csv')
 
-    for i in range(100):
-        plt.plot(df.iloc[i])
-        plt.title(str(i))
-        plt.xlabel(str(conc.iloc[i]))
-        plt.show()
 
 
-    #plot_peak_comparison(df, [10, 0, 1, 69], [2, 15, 30, 50])
+    make_solvent_comparison_plot(df.iloc[5]-170000, df.iloc[15]-50000, df.iloc[31])
 
 
     # new = pd.concat([corr['359'], pd.DataFrame(corr.columns)], axis=1)

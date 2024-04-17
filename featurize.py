@@ -16,7 +16,7 @@ def integrate_every_five(df, dx):
     return df[new_columns]
 
 if __name__ == '__main__':
-    GSH_df = pd.read_csv('data/raman_prepro_580.csv')
+    GSH_df = pd.read_csv('data/raman_prepro_610.csv')
 
-    integrate_every_five(GSH_df, 10).to_csv('data/integrated spectra/600gg_data_GSSG_10.csv', index=False)
+    integrate_every_five(GSH_df, 10).to_csv('data/integrated spectra/600gg_data_GSH_10.csv', index=False)
 
