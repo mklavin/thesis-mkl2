@@ -232,12 +232,14 @@ def calc_covariance_at_dif_conc(df, conc, threshold):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/raman_prepro_610.csv')
+    df = pd.read_csv('data/raman_prepro_580.csv')
     glu = pd.read_csv('data/correlation analysis/prepro_corr_glu_580.csv')
     conc = pd.read_csv('data/raman_610_concentrations_GSH.csv')
     names = pd.read_csv('data/raw data/daniels_data/danielmimi_data_580_names.csv')
 
-    print(np.median(conc['conc']))
+    plt.plot(df.iloc[0])
+    plt.plot(df.iloc[4])
+    plt.show()
     exit()
 
     df = calc_correlation_matrix(df, conc)

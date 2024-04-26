@@ -36,18 +36,19 @@ def separate_by_sol_andplot(data, indices):
 def plot_and_cluster_DBSCAN(dataframe):
     """
     clustering based on DBSCAN values
-    :param dataframe:
-    :return:
+    :param dataframe: dataframe to perform clustering on
+    :return: clustering labels of each spectral column
     """
 
-    dbscan = DBSCAN(eps=.35)
+    dbscan = DBSCAN(eps=.35) # change epsilon to change number of clusters
     dataframe['Cluster'] = dbscan.fit_predict(dataframe)
 
     # uncover to make scatterplot
+
     # scatter_plot = sns.scatterplot(data=dataframe, x=dataframe[0], y=dataframe[1], alpha=0.1, palette='gist_ncar',
     #                 hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
     #                 hue=clustering.labels_).set_title(f"Neighbors= {5}, eps=5")
-    sns.set(font_scale=2)
+    # sns.set(font_scale=2)
     # plt.tick_params(axis='both', which='major', labelsize=14)
     # plt.xlabel('UMAP1', fontsize=16)
     # plt.ylabel('UMAP2', fontsize=16)
@@ -55,14 +56,23 @@ def plot_and_cluster_DBSCAN(dataframe):
     # scatter_fig = scatter_plot.get_figure()
     # scatter_fig.savefig('graph2.png', dpi= 1200)
     # plt.show()
-    return dataframe['Cluster']
+
+    return dataframe['Cluster'] # clustering labels
 
 def plot_and_cluster_kmeans(dataframe, num_clust):
+    """
+    clustering with kmeans
+    different from DBSCAN because you can specify the number of clusters!
+    :param dataframe: dataframe to perform clustering on
+    :param num_clust: number of clusters you want
+    :return: cluster labels for each spectral column
+    """
     kmeans = KMeans(n_clusters=num_clust)
     clustering = kmeans.fit(dataframe.T)
 
 
     # uncover to make scatterplot
+
     # scatter_plot = sns.scatterplot(data=dataframe, x=dataframe['0'], y=dataframe['1'], alpha=0.3,
     #                                hue_order=np.random.shuffle(np.arange(len(clustering.labels_))),
     #                                hue=clustering.labels_).set_title(f"Neighbors= {40}, eps=5")
@@ -76,58 +86,15 @@ def plot_and_cluster_kmeans(dataframe, num_clust):
 
     return clustering.labels_
 
-def kmeans_missing(X, n_clusters, max_iter=10):
-    """Perform K-Means clustering on data with missing values.
-
-    Args:
-      X: An [n_samples, n_features] array of data to cluster.
-      n_clusters: Number of clusters to form.
-      max_iter: Maximum number of EM iterations to perform.
-
-    Returns:
-      labels: An [n_samples] vector of integer labels.
-      centroids: An [n_clusters, n_features] array of cluster centroids.
-      X_hat: Copy of X with the missing values filled in.
-    """
-
-    # Initialize missing values to their column means
-    X = X.T
-    missing = ~np.isfinite(X)
-    mu = np.nanmean(X, 0, keepdims=1)
-    X_hat = np.where(missing, mu, X)
-    print(X_hat)
-
-    for i in range(max_iter):
-        if i > 0:
-            # initialize KMeans with the previous set of centroids. this is much
-            # faster and makes it easier to check convergence (since labels
-            # won't be permuted on every iteration), but might be more prone to
-            # getting stuck in local minima.
-            cls = KMeans(n_clusters, init=prev_centroids)
-        else:
-            # do multiple random initializations in parallel
-            cls = KMeans(n_clusters)
-
-        # perform clustering on the filled-in data
-        labels = cls.fit_predict(X_hat)
-        centroids = cls.cluster_centers_
-
-        # fill in the missing values based on their cluster centroids
-        X_hat[missing] = centroids[labels][missing]
-
-        # when the labels have stopped changing then we have converged
-        if i > 0 and np.all(labels == prev_labels):
-            break
-
-        prev_labels = labels
-        prev_centroids = cls.cluster_centers_
-
-    return labels, centroids, X_hat
-
 def make_baselineplot(x, y):
-    # Fit a polynomial to the data
-    polyfit_order = 7
-    row_polyfit = pybaselines.morphological.jbcd(y)[0]
+    """
+    plots raman baseline fitted with a PyBaseline package
+    :param x: Raman x values
+    :param y: Raman intensity values
+    :return: None, can uncover line to save figure
+    """
+    # Fit a baseline package to the data
+    row_polyfit = pybaselines.morphological.jbcd(y)[0] # where to specify baseline package
 
     # Customize plot styles for better readability
     plt.rc('font', family='serif', size=12)
@@ -160,16 +127,21 @@ def make_baselineplot(x, y):
     ax2.set_xticklabels(x_ticks_labels, fontsize=12)
 
     # Save the plot to a file for inclusion in your paper
-    plt.savefig('baseline_removal_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
+    # plt.savefig('baseline_removal_plot.png', dpi=300, bbox_inches='tight')  # Adjust the file format and resolution as needed
 
     # Display the plot (optional)
     plt.show()
 
-    return None  # This line is not needed
+    return None
 
 def make_sampledist_plot(conc):
+    """
+    makes a bar plot with concentration distribution
+    :param conc: dataframe containing concentrations
+    :return: plots a barplot of concentrations
+    """
     # Extract the data and compute value counts
-    x = conc['conc_GSSG']
+    x = conc['conc_GSSG'] # change the column label
     x_counter = x.value_counts()
 
     # Set up Seaborn for improved aesthetics
@@ -193,32 +165,7 @@ def make_sampledist_plot(conc):
     sns.despine()
 
     # Save the plot as a high-resolution image (optional)
-    plt.savefig("sample_distribution_plot580.png", dpi=300, bbox_inches='tight')
-
-    # Display the plot
-    plt.show()
-
-    return None
-
-def make_barplot_concetrations(df):
-    # Count the number of values in each column
-    value_counts = df.count()
-
-    # Create a bar plot
-    plt.figure(figsize=(8, 6))
-    value_counts.plot(kind='bar', color='hotpink')
-
-    # Customize plot labels and title
-    plt.xlabel('Solvents', labelpad=15)
-    plt.ylabel('Number of Samples', labelpad=15)
-    plt.title('Number of Samples in the 610 Region for Each Solvent Type', pad=20)
-
-    # Customize tick labels
-    plt.xticks(range(len(df.columns)), df.columns, rotation=0, fontsize=12)
-    plt.yticks(fontsize=12)
-
-    # Save the plot as a high-resolution image (optional)
-    plt.savefig("solvent_distribution_plot610.png", dpi=300, bbox_inches='tight')
+    # plt.savefig("sample_distribution_plot580.png", dpi=300, bbox_inches='tight')
 
     # Display the plot
     plt.show()
@@ -226,6 +173,13 @@ def make_barplot_concetrations(df):
     return None
 
 def plot_predicted_versus_test(y_pred, y_test):
+    """
+    Plots a scatterplot with x=y line to visualize ML model's predicted
+    versus test data
+    :param y_pred: model's predicted values for concentration
+    :param y_test: actual value for concentration
+    :return: plot of predicted versus test values
+    """
     # Scatter plot
     plt.scatter(y_pred, y_test, color='blue', marker='o', label='Actual vs. Predicted')
 
