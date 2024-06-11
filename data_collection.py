@@ -247,23 +247,9 @@ def reorder_rows(df, indices):
     return newdf
 
 if __name__ == '__main__':
+    df = gather_data('/Users/mimilavin/PycharmProjects/thesis-mkl2/data/raw data/150 gg data/Apr 13 Data Collection')
 
-    df = pd.read_csv('data/apr13_data_collection.csv')
 
-
-    # df['conc_GSSG'].to_csv('data/apr13_conc_GSSG.csv', index=False)
-    # df['conc_GSH'].to_csv('data/apr13_conc_GSH.csv', index=False)
-    # df['names'].to_csv('data/apr13_names.csv', index=False)
-
-    df = df.drop(columns=['conc_GSSG', 'conc_GSH', 'names'])
-    df = reorder_rows(df, np.arange(0, len(df)))
-    df = df.drop(columns=['564'])
-    df = df.iloc[:, 523:882]
-    print(df)
-    plt.plot(df.iloc[34])
-    plt.show()
-
-    df.to_csv('data/apr13_data.csv', index=False)
 
 
 
